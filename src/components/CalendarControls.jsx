@@ -24,6 +24,7 @@ import {
   ShowChart,
   BarChart,
   TrendingUp,
+  Assessment,
 } from "@mui/icons-material";
 import { format } from "date-fns";
 
@@ -64,6 +65,10 @@ const CalendarControls = ({
   // Data props
   onRefreshData = () => {},
   isLoading = false,
+
+  // Dashboard props
+  selectedDate = null,
+  onOpenDashboard = () => {},
 
   // Metric filter props
   volatilityThreshold = [0, 10],
@@ -197,6 +202,39 @@ const CalendarControls = ({
                   </Button>
                 ))}
               </ButtonGroup>
+            </Box>
+
+            {/* Dashboard Control */}
+            <Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: "block", mb: 0.5 }}
+              >
+                Analytics
+              </Typography>
+              <Tooltip title={`Open Data Dashboard${selectedDate ? ` for ${format(selectedDate, 'MMM dd')}` : ' (select a date first)'}`}>
+                <span>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<Assessment />}
+                    onClick={() => {
+                      console.log('Dashboard button clicked!', { selectedDate, onOpenDashboard });
+                      if (selectedDate) {
+                        onOpenDashboard();
+                      } else {
+                        console.log('No date selected - button should be disabled');
+                        alert('Please select a date first');
+                      }
+                    }}
+                    disabled={!selectedDate}
+                    sx={{ minWidth: 120 }}
+                  >
+                    Dashboard
+                  </Button>
+                </span>
+              </Tooltip>
             </Box>
 
             {/* Zoom Controls */}

@@ -33,6 +33,7 @@ import CalendarLegend from "./CalendarLegend";
 import CalendarControls from "./CalendarControls";
 import CalendarTooltip from "./CalendarTooltip";
 import DateDetailPanel from "./DateDetailPanel";
+import DataDashboard from "./DataDashboard";
 import { VIEW_TYPES, DEFAULT_SYMBOL, WEEK_DAYS } from "../constants";
 
 /**
@@ -75,6 +76,13 @@ const InteractiveCalendar = ({
   const [detailPanelOpen, setDetailPanelOpen] = useState(false);
   const [detailPanelData, setDetailPanelData] = useState(null);
   const [controlsCollapsed, setControlsCollapsed] = useState(false);
+  const [dashboardOpen, setDashboardOpen] = useState(false);
+  const [dashboardData, setDashboardData] = useState(null);
+
+  // Debug dashboard state
+  useEffect(() => {
+    console.log("Dashboard state changed:", { dashboardOpen, dashboardData });
+  }, [dashboardOpen, dashboardData]);
 
   // Hooks
   const {
@@ -168,6 +176,14 @@ const InteractiveCalendar = ({
     });
   }, [data, filters.filters.volatilityRange, filters.filters.volumeRange]);
 
+  // Debug filtered data
+  useEffect(() => {
+    console.log("Filtered data count:", filteredData ? filteredData.length : 0);
+    if (filteredData && filteredData.length > 0) {
+      console.log("Sample filtered data:", filteredData.slice(0, 3));
+    }
+  }, [filteredData]);
+
   // Create filtered data lookup map
   const createFilteredDataLookup = useCallback(() => {
     const lookup = new Map();
@@ -197,6 +213,7 @@ const InteractiveCalendar = ({
     escape: () => {
       dateRangeSelection.cancelSelection();
       setDetailPanelOpen(false);
+      setDashboardOpen(false);
       setSelectedDate(null);
     },
     "ctrl+z": () => zoom.resetZoom(),
@@ -208,6 +225,15 @@ const InteractiveCalendar = ({
       if (selectedDate && data) {
         setDetailPanelOpen(true);
         setDetailPanelData(getFilteredDataForDate(selectedDate));
+      }
+    },
+    d: () => {
+      if (selectedDate && data) {
+        const cellData = getFilteredDataForDate(selectedDate);
+        if (cellData) {
+          setDashboardData(cellData);
+          setDashboardOpen(true);
+        }
       }
     },
   });
@@ -263,6 +289,7 @@ const InteractiveCalendar = ({
   // Handle cell click
   const handleCellClick = useCallback(
     (date, cellData) => {
+      console.log("Cell clicked:", { date, cellData });
       setSelectedDate(date);
       handleMouseFocus(date);
       onDateSelect(date, cellData);
@@ -318,10 +345,14 @@ const InteractiveCalendar = ({
   );
 
   const handleCellDoubleClick = useCallback((date, cellData, event) => {
-    // Open detailed view on double click
+    console.log("Double click detected!", { date, cellData });
+    // Open Data Dashboard on double click
     if (cellData) {
-      setDetailPanelData(cellData);
-      setDetailPanelOpen(true);
+      console.log("Opening dashboard via double click");
+      setDashboardData(cellData);
+      setDashboardOpen(true);
+    } else {
+      console.log("No cell data for double click");
     }
   }, []);
 
@@ -578,6 +609,23 @@ const InteractiveCalendar = ({
           onZoomOut={zoom.zoomOut}
           onRefreshData={handleRefreshData}
           isLoading={isLoading}
+          selectedDate={selectedDate}
+          onOpenDashboard={() => {
+            console.log("onOpenDashboard called!", { selectedDate });
+            if (selectedDate) {
+              const cellData = getFilteredDataForDate(selectedDate);
+              console.log("cellData found:", cellData);
+              if (cellData) {
+                setDashboardData(cellData);
+                setDashboardOpen(true);
+                console.log("Dashboard should be opening...");
+              } else {
+                console.log("No cellData found for selected date");
+              }
+            } else {
+              console.log("No selected date");
+            }
+          }}
           volatilityThreshold={filters.filters.volatilityRange}
           onVolatilityThresholdChange={(value) =>
             handleFilterChange("volatilityRange", value)
@@ -694,6 +742,19 @@ const InteractiveCalendar = ({
           />
         </>
       )}
+
+      {/* Data Dashboard */}
+      <DataDashboard
+        open={dashboardOpen}
+        onClose={() => {
+          console.log("Dashboard closing...");
+          setDashboardOpen(false);
+        }}
+        selectedData={dashboardData}
+        historicalData={data || []}
+        benchmarkData={[]} // TODO: Add benchmark data if available
+        technicalIndicators={{}}
+      />
     </Box>
   );
 };

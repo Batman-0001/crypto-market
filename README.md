@@ -36,6 +36,44 @@ An interactive calendar component for cryptocurrency market data visualization w
   - → **Neutral**: Gray indicators for minimal change
   - 🏺 **Border colors**: Left border color-coding for quick identification
 
+### 📊 Advanced Data Dashboard
+
+#### 🎯 Comprehensive Analytics Panel
+
+- **Professional-grade analysis interface** accessible via:
+  - 🖱️ **Double-click** any calendar cell
+  - ⌨️ **Keyboard shortcut** (`D` key)
+  - 🎛️ **Dashboard button** in controls panel
+
+#### 📈 Four Analysis Tabs
+
+1. **📋 Overview Tab**:
+
+   - OHLC (Open, High, Low, Close) price summary
+   - Volume & liquidity metrics with percentile rankings
+   - Volatility analysis with risk classifications
+   - Price change indicators with trend direction
+
+2. **⚡ Technical Analysis Tab**:
+
+   - Interactive price charts with moving averages (SMA 20/50)
+   - Technical indicators (RSI, MACD, Bollinger Bands)
+   - Signal interpretation (Bullish/Bearish/Neutral)
+   - Volume profile analysis with pattern recognition
+
+3. **🎯 Performance Tab**:
+
+   - 30-day performance summary with key metrics
+   - Sharpe ratio and risk-adjusted returns
+   - Maximum drawdown analysis
+   - Cumulative returns visualization
+
+4. **⚠️ Risk Metrics Tab**:
+   - Value at Risk (VaR) at 95% and 99% confidence levels
+   - Downside deviation for negative return analysis
+   - Beta coefficient for market correlation
+   - Calmar ratio for risk-adjusted performance
+
 ### ⏱️ Multi-Timeframe Support
 
 #### 📅 Daily View
@@ -147,6 +185,84 @@ The application uses environment variables for configuration and security:
 - The `.env` file is excluded from git for security
 - Use `.env.example` as a template
 - Never commit API keys or secrets to version control
+
+## 🎮 Usage Guide
+
+### 📅 Basic Calendar Interaction
+
+- **Navigate months**: Use arrow buttons in the header or `←/→` arrow keys
+- **Select dates**: Click on any calendar cell to select it
+- **Hover for details**: Move mouse over cells to see tooltip information
+- **Zoom**: Use `Ctrl + Plus/Minus` or zoom controls to scale the calendar
+
+### 📊 DataDashboard Access
+
+#### **Opening the Dashboard**:
+
+1. **Double-click method**: Double-click any calendar cell with data
+2. **Keyboard shortcut**: Select a date and press `D` key
+3. **Control panel**: Select a date and click "Dashboard" button
+
+#### **Dashboard Navigation**:
+
+- **Overview Tab**: View price summary, volume metrics, and volatility analysis
+- **Technical Tab**: Analyze price charts, moving averages, RSI, and MACD
+- **Performance Tab**: Review 30-day performance, Sharpe ratio, and returns
+- **Risk Metrics Tab**: Examine VaR, downside deviation, and risk indicators
+
+#### **Dashboard Features**:
+
+- **Interactive Charts**: Hover over data points for detailed information
+- **Technical Signals**: Color-coded bullish/bearish indicators
+- **Risk Assessment**: Visual risk levels with explanatory tooltips
+- **Performance Metrics**: Comprehensive financial analysis tools
+
+### 🎛️ Advanced Controls
+
+#### **Filtering Options**:
+
+- **Volatility Range**: Adjust slider to filter by volatility percentage (0-20%)
+- **Volume Range**: Filter by volume percentile ranking (0-100%)
+- **Feature Toggles**: Enable/disable heatmaps, liquidity indicators, and performance metrics
+
+#### **Keyboard Shortcuts**:
+
+- `Escape` - Close panels and deselect
+- `D` - Open DataDashboard for selected date
+- `F` - Open detail panel for selected date
+- `Ctrl + R` - Refresh market data
+- `Ctrl + H` - Toggle controls panel
+- `Ctrl + Z` - Reset zoom level
+- `Arrow Keys` - Navigate calendar dates
+
+#### **Date Range Selection**:
+
+- **Right-click** to start range selection
+- **Drag** to extend selection
+- **Click "Clear"** to reset range selection
+
+### 🔍 Data Interpretation
+
+#### **Color Coding**:
+
+- **Green**: Positive performance, low risk, bullish signals
+- **Red**: Negative performance, high risk, bearish signals
+- **Yellow/Orange**: Moderate levels, warning conditions
+- **Blue**: Informational, neutral conditions
+
+#### **Volatility Levels**:
+
+- **Low (Green)**: < 2% daily volatility - Stable price action
+- **Moderate (Yellow)**: 2-5% volatility - Normal market movement
+- **High (Orange)**: 5-10% volatility - Increased price swings
+- **Extreme (Red)**: > 10% volatility - Highly volatile conditions
+
+#### **Technical Signal Interpretation**:
+
+- **RSI > 70**: Potentially overbought condition
+- **RSI < 30**: Potentially oversold condition
+- **Price above SMA**: Bullish trend indication
+- **MACD positive**: Upward momentum signal
 
 ## 🛠️ Technology Stack
 
