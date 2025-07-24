@@ -1,0 +1,134 @@
+/* Global styles for the Interactive Calendar */
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: rgba(33, 37, 41, 0.87);
+  background-color: #ffffff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Calendar specific styles */
+.calendar-cell {
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.calendar-cell:hover {
+  transform: scale(1.05);
+  z-index: 2;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-cell:focus {
+  outline: 2px solid #1976d2;
+  outline-offset: -2px;
+  z-index: 3;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .calendar-cell {
+    border: 2px solid currentColor !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .calendar-cell:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .MuiTooltip-tooltip {
+    display: none !important;
+  }
+}
+
+/* Loading animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Focus ring for keyboard navigation */
+.keyboard-focused {
+  outline: 3px solid #1976d2 !important;
+  outline-offset: 2px !important;
+}
+
+/* Responsive design helpers */
+@media (max-width: 768px) {
+  .calendar-cell {
+    min-height: 45px !important;
+    min-width: 45px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-cell {
+    min-height: 35px !important;
+    min-width: 35px !important;
+  }
+}
