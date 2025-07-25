@@ -10,6 +10,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import { TrendingUp, CalendarToday, Analytics } from "@mui/icons-material";
 import InteractiveCalendar from "./components/InteractiveCalendar";
 import { DEFAULT_SYMBOL, VIEW_TYPES } from "./constants";
 
@@ -203,7 +204,10 @@ function App() {
                 },
               }}
             >
-              🚀 Crypto Market Calendar
+              <TrendingUp
+                sx={{ fontSize: "2.5rem", mr: 2, verticalAlign: "middle" }}
+              />
+              Crypto Market Calendar
             </Typography>
             <Typography
               variant="h6"
@@ -351,7 +355,10 @@ function App() {
                 },
               }}
             >
-              📅 {selectedDate.toDateString()}
+              <CalendarToday
+                sx={{ fontSize: "1.5rem", mr: 1, verticalAlign: "middle" }}
+              />
+              {selectedDate.toDateString()}
             </Typography>
             <Typography
               variant="body2"
@@ -471,7 +478,10 @@ function App() {
                 },
               }}
             >
-              📊 Date Range Selected
+              <Analytics
+                sx={{ fontSize: "1.5rem", mr: 1, verticalAlign: "middle" }}
+              />
+              Date Range Selected
             </Typography>
             <Typography
               variant="body2"

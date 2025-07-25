@@ -31,7 +31,19 @@ import {
   ExpandMore,
   ExpandLess,
   Settings,
+  CalendarToday,
+  Analytics,
 } from "@mui/icons-material";
+import {
+  RiCurrencyLine,
+  RiTimeLine,
+  RiSearchLine,
+  RiDropLine,
+  RiBarChartLine,
+  RiThermometerLine,
+  RiLineChartLine,
+} from "react-icons/ri";
+import { HiOutlineFire } from "react-icons/hi";
 import { format } from "date-fns";
 
 /**
@@ -344,7 +356,14 @@ const CalendarControls = ({
                   fontSize: "0.75rem",
                 }}
               >
-                💎 Cryptocurrency
+                <RiCurrencyLine
+                  style={{
+                    fontSize: "1rem",
+                    marginRight: "8px",
+                    color: colorPalette.primary.main,
+                  }}
+                />
+                Cryptocurrency
               </Typography>
               <FormControl size="medium" sx={{ width: "100%" }}>
                 <Select
@@ -448,7 +467,14 @@ const CalendarControls = ({
                   fontSize: "0.75rem",
                 }}
               >
-                📊 Time Frame
+                <RiTimeLine
+                  style={{
+                    fontSize: "1rem",
+                    marginRight: "8px",
+                    color: colorPalette.secondary.main,
+                  }}
+                />
+                Time Frame
               </Typography>
               <ButtonGroup
                 size="medium"
@@ -523,7 +549,14 @@ const CalendarControls = ({
                   fontSize: "0.75rem",
                 }}
               >
-                🔍 Zoom Level
+                <RiSearchLine
+                  style={{
+                    fontSize: "1rem",
+                    marginRight: "8px",
+                    color: colorPalette.success.main,
+                  }}
+                />
+                Zoom Level
               </Typography>
               <ButtonGroup
                 size="medium"
@@ -606,7 +639,14 @@ const CalendarControls = ({
                   fontSize: "0.75rem",
                 }}
               >
-                📅 Selected Range
+                <CalendarToday
+                  style={{
+                    fontSize: "1rem",
+                    marginRight: "8px",
+                    color: colorPalette.warning.main,
+                  }}
+                />
+                Selected Range
               </Typography>
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Chip
@@ -682,7 +722,8 @@ const CalendarControls = ({
                 gap: 1,
               }}
             >
-              ✨ Display Features
+              <FilterList style={{ fontSize: "1.2rem", marginRight: "8px" }} />
+              Display Features
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
               {[
@@ -692,7 +733,7 @@ const CalendarControls = ({
                   checked: showVolatilityHeatmap,
                   onChange: onToggleVolatilityHeatmap,
                   color: colorPalette.primary.main,
-                  icon: "🔥",
+                  icon: <HiOutlineFire size={20} />,
                 },
                 {
                   key: "liquidity",
@@ -700,7 +741,7 @@ const CalendarControls = ({
                   checked: showLiquidityIndicators,
                   onChange: onToggleLiquidityIndicators,
                   color: colorPalette.success.main,
-                  icon: "💧",
+                  icon: <RiDropLine size={20} />,
                 },
                 {
                   key: "performance",
@@ -708,7 +749,7 @@ const CalendarControls = ({
                   checked: showPerformanceMetrics,
                   onChange: onTogglePerformanceMetrics,
                   color: colorPalette.warning.main,
-                  icon: "📈",
+                  icon: <RiLineChartLine size={20} />,
                 },
               ].map((feature) => (
                 <Box
@@ -753,9 +794,15 @@ const CalendarControls = ({
                       <Box
                         sx={{ display: "flex", alignItems: "center", gap: 1 }}
                       >
-                        <Typography sx={{ fontSize: "1.2rem" }}>
+                        <Box
+                          sx={{
+                            color: feature.color,
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
                           {feature.icon}
-                        </Typography>
+                        </Box>
                         <Typography
                           sx={{ fontWeight: 600, color: feature.color }}
                         >
@@ -798,7 +845,8 @@ const CalendarControls = ({
                 gap: 1,
               }}
             >
-              🎯 Metric Filters
+              <Analytics style={{ fontSize: "1.2rem", marginRight: "8px" }} />
+              Metric Filters
             </Typography>
 
             {/* Enhanced Volatility Threshold */}
@@ -814,7 +862,14 @@ const CalendarControls = ({
                   gap: 1,
                 }}
               >
-                🌡️ Volatility Range: {volatilityThreshold[0]}% -{" "}
+                <RiThermometerLine
+                  style={{
+                    fontSize: "1rem",
+                    marginRight: "8px",
+                    color: colorPalette.primary.main,
+                  }}
+                />
+                Volatility Range: {volatilityThreshold[0]}% -{" "}
                 {volatilityThreshold[1]}%
               </Typography>
               <Box
@@ -903,8 +958,14 @@ const CalendarControls = ({
                   gap: 1,
                 }}
               >
-                📊 Volume Percentile: {volumeThreshold[0]}% -{" "}
-                {volumeThreshold[1]}%
+                <RiBarChartLine
+                  style={{
+                    fontSize: "1rem",
+                    marginRight: "8px",
+                    color: colorPalette.success.main,
+                  }}
+                />
+                Volume Percentile: {volumeThreshold[0]}% - {volumeThreshold[1]}%
               </Typography>
               <Box
                 sx={{
