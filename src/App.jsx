@@ -241,7 +241,31 @@ function App() {
         </Paper>
 
         {/* Main Content */}
-        <Container maxWidth="xl" sx={{ py: 0 }}>
+        <Container
+          maxWidth="xl"
+          sx={{
+            py: 4,
+            mt: 2,
+            mb: 3,
+            background:
+              "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%)",
+            backdropFilter: "blur(10px)",
+            borderRadius: "24px 24px 0 0",
+            position: "relative",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "60px",
+              height: "4px",
+              background: "linear-gradient(90deg, #1976d2, #42a5f5)",
+              borderRadius: "2px",
+              opacity: 0.7,
+            },
+          }}
+        >
           <InteractiveCalendar
             initialSymbol={DEFAULT_SYMBOL}
             initialViewType={VIEW_TYPES.DAILY}
