@@ -95,24 +95,145 @@ function App() {
       <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
         {/* Header */}
         <Paper
-          elevation={2}
+          elevation={0}
           sx={{
-            py: 3,
+            py: 4,
             mb: 0,
             borderRadius: 0,
-            background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)",
+            background:
+              "linear-gradient(135deg, #0d47a1 0%, #1565c0 25%, #1976d2 50%, #1e88e5 75%, #42a5f5 100%)",
+            backgroundSize: "400% 400%",
             color: "white",
+            position: "relative",
+            overflow: "hidden",
+            boxShadow: "0 8px 32px rgba(25, 118, 210, 0.3)",
+            animation:
+              "gradientShift 8s ease-in-out infinite, headerPulse 4s ease-in-out infinite",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background:
+                "radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)",
+              opacity: 0.7,
+              animation: "float 6s ease-in-out infinite",
+            },
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: "-100%",
+              width: "100%",
+              height: "100%",
+              background:
+                "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+              animation: "shimmer 3s infinite",
+            },
+            "@keyframes gradientShift": {
+              "0%": { backgroundPosition: "0% 50%" },
+              "50%": { backgroundPosition: "100% 50%" },
+              "100%": { backgroundPosition: "0% 50%" },
+            },
+            "@keyframes headerPulse": {
+              "0%": { transform: "scale(1)" },
+              "50%": { transform: "scale(1.002)" },
+              "100%": { transform: "scale(1)" },
+            },
+            "@keyframes float": {
+              "0%": { transform: "translateY(0px) rotate(0deg)" },
+              "33%": { transform: "translateY(-10px) rotate(1deg)" },
+              "66%": { transform: "translateY(5px) rotate(-1deg)" },
+              "100%": { transform: "translateY(0px) rotate(0deg)" },
+            },
+            "@keyframes shimmer": {
+              "0%": { left: "-100%" },
+              "100%": { left: "100%" },
+            },
           }}
         >
-          <Container maxWidth="xl">
+          <Container
+            maxWidth="xl"
+            sx={{
+              position: "relative",
+              zIndex: 2,
+              animation: "slideInUp 1s ease-out",
+              "@keyframes slideInUp": {
+                "0%": {
+                  opacity: 0,
+                  transform: "translateY(30px)",
+                },
+                "100%": {
+                  opacity: 1,
+                  transform: "translateY(0)",
+                },
+              },
+            }}
+          >
             <Typography
               variant="h3"
               component="h1"
-              sx={{ fontWeight: "bold", mb: 1 }}
+              sx={{
+                fontWeight: "800",
+                mb: 2,
+                textShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+                letterSpacing: "-0.5px",
+                background: "linear-gradient(45deg, #ffffff 30%, #e3f2fd 90%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                animation: "titleGlow 3s ease-in-out infinite alternate",
+                transform: "translateY(0)",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-2px) scale(1.02)",
+                  textShadow: "0 6px 12px rgba(0, 0, 0, 0.4)",
+                },
+                "@keyframes titleGlow": {
+                  "0%": {
+                    filter:
+                      "brightness(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.3))",
+                  },
+                  "100%": {
+                    filter:
+                      "brightness(1.1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))",
+                  },
+                },
+              }}
             >
               🚀 Crypto Market Calendar
             </Typography>
-            <Typography variant="h6" sx={{ opacity: 0.9 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                opacity: 0.95,
+                fontWeight: "400",
+                lineHeight: 1.6,
+                maxWidth: "800px",
+                margin: "0 auto",
+                textAlign: "center",
+                textShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+                animation: "fadeInSlide 1.5s ease-out 0.3s both",
+                transform: "translateY(0)",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  opacity: 1,
+                  transform: "translateY(-1px)",
+                },
+                "@keyframes fadeInSlide": {
+                  "0%": {
+                    opacity: 0,
+                    transform: "translateY(20px)",
+                  },
+                  "100%": {
+                    opacity: 0.95,
+                    transform: "translateY(0)",
+                  },
+                },
+              }}
+            >
               Interactive cryptocurrency market data visualization with
               volatility heatmaps, liquidity indicators, and performance metrics
             </Typography>
@@ -152,32 +273,106 @@ function App() {
         {/* Selected Date Info */}
         {selectedDate && selectedData && (
           <Paper
-            elevation={3}
+            elevation={8}
             sx={{
               position: "fixed",
               bottom: 20,
               right: 20,
-              p: 2,
-              maxWidth: 300,
+              p: 3,
+              maxWidth: 320,
               zIndex: 1000,
+              borderRadius: "16px",
+              background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+              boxShadow:
+                "0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)",
+              animation:
+                "slideInFromRight 0.5s ease-out, floatAnimation 3s ease-in-out infinite",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                transform: "translateY(-4px) scale(1.02)",
+                boxShadow: "0 12px 40px rgba(0, 0, 0, 0.15)",
+              },
+              "@keyframes slideInFromRight": {
+                "0%": {
+                  opacity: 0,
+                  transform: "translateX(100px)",
+                },
+                "100%": {
+                  opacity: 1,
+                  transform: "translateX(0)",
+                },
+              },
+              "@keyframes floatAnimation": {
+                "0%": { transform: "translateY(0px)" },
+                "50%": { transform: "translateY(-2px)" },
+                "100%": { transform: "translateY(0px)" },
+              },
             }}
           >
-            <Typography variant="h6" sx={{ mb: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                mb: 2,
+                background: "linear-gradient(45deg, #1976d2, #42a5f5)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                fontWeight: "700",
+                animation: "textShimmer 2s ease-in-out infinite alternate",
+                "@keyframes textShimmer": {
+                  "0%": { opacity: 0.8 },
+                  "100%": { opacity: 1 },
+                },
+              }}
+            >
               📅 {selectedDate.toDateString()}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 1,
+                animation: "fadeInUp 0.6s ease-out 0.1s both",
+                "@keyframes fadeInUp": {
+                  "0%": { opacity: 0, transform: "translateY(10px)" },
+                  "100%": { opacity: 1, transform: "translateY(0)" },
+                },
+              }}
+            >
               <strong>Close Price:</strong> $
               {selectedData.close?.toFixed(2) || "N/A"}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 1,
+                animation: "fadeInUp 0.6s ease-out 0.2s both",
+              }}
+            >
               <strong>Price Change:</strong>{" "}
               {selectedData.priceChange?.toFixed(2) || 0}%
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 1,
+                animation: "fadeInUp 0.6s ease-out 0.3s both",
+              }}
+            >
               <strong>Volatility:</strong>{" "}
               {selectedData.volatility?.toFixed(2) || 0}%
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                animation: "fadeInUp 0.6s ease-out 0.4s both",
+              }}
+            >
               <strong>Volume:</strong>{" "}
               {selectedData.volume?.toLocaleString() || "N/A"}
             </Typography>
@@ -187,29 +382,106 @@ function App() {
         {/* Selected Date Range Info */}
         {selectedDateRange && (
           <Paper
-            elevation={3}
+            elevation={8}
             sx={{
               position: "fixed",
               bottom: 20,
               left: 20,
-              p: 2,
-              maxWidth: 350,
+              p: 3,
+              maxWidth: 380,
               zIndex: 1000,
-              backgroundColor: "primary.light",
+              borderRadius: "16px",
+              background:
+                "linear-gradient(135deg, #1976d2 0%, #1565c0 50%, #0d47a1 100%)",
               color: "white",
+              backdropFilter: "blur(10px)",
+              boxShadow:
+                "0 8px 32px rgba(25, 118, 210, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)",
+              animation:
+                "slideInFromLeft 0.5s ease-out, pulseGlow 4s ease-in-out infinite",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                transform: "translateY(-4px) scale(1.02)",
+                boxShadow: "0 12px 40px rgba(25, 118, 210, 0.4)",
+              },
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background:
+                  "radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)",
+                borderRadius: "16px",
+                opacity: 0.6,
+              },
+              "@keyframes slideInFromLeft": {
+                "0%": {
+                  opacity: 0,
+                  transform: "translateX(-100px)",
+                },
+                "100%": {
+                  opacity: 1,
+                  transform: "translateX(0)",
+                },
+              },
+              "@keyframes pulseGlow": {
+                "0%": { boxShadow: "0 8px 32px rgba(25, 118, 210, 0.3)" },
+                "50%": { boxShadow: "0 8px 32px rgba(25, 118, 210, 0.5)" },
+                "100%": { boxShadow: "0 8px 32px rgba(25, 118, 210, 0.3)" },
+              },
             }}
           >
-            <Typography variant="h6" sx={{ mb: 1, color: "white" }}>
+            <Typography
+              variant="h6"
+              sx={{
+                mb: 2,
+                color: "white",
+                fontWeight: "700",
+                textShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+                animation: "titleFadeIn 0.8s ease-out",
+                "@keyframes titleFadeIn": {
+                  "0%": { opacity: 0, transform: "translateY(-10px)" },
+                  "100%": { opacity: 1, transform: "translateY(0)" },
+                },
+              }}
+            >
               📊 Date Range Selected
             </Typography>
-            <Typography variant="body2" sx={{ color: "white" }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "rgba(255, 255, 255, 0.95)",
+                mb: 1,
+                animation: "fadeInUp 0.6s ease-out 0.1s both",
+                "@keyframes fadeInUp": {
+                  "0%": { opacity: 0, transform: "translateY(10px)" },
+                  "100%": { opacity: 1, transform: "translateY(0)" },
+                },
+              }}
+            >
               <strong>From:</strong>{" "}
               {selectedDateRange.start.toLocaleDateString()}
             </Typography>
-            <Typography variant="body2" sx={{ color: "white" }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "rgba(255, 255, 255, 0.95)",
+                mb: 1,
+                animation: "fadeInUp 0.6s ease-out 0.2s both",
+              }}
+            >
               <strong>To:</strong> {selectedDateRange.end.toLocaleDateString()}
             </Typography>
-            <Typography variant="body2" sx={{ color: "white" }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "rgba(255, 255, 255, 0.95)",
+                mb: 2,
+                animation: "fadeInUp 0.6s ease-out 0.3s both",
+              }}
+            >
               <strong>Duration:</strong>{" "}
               {Math.ceil(
                 (selectedDateRange.end - selectedDateRange.start) /
@@ -219,7 +491,17 @@ function App() {
             </Typography>
             <Typography
               variant="caption"
-              sx={{ color: "rgba(255, 255, 255, 0.8)", fontStyle: "italic" }}
+              sx={{
+                color: "rgba(255, 255, 255, 0.8)",
+                fontStyle: "italic",
+                animation:
+                  "fadeInUp 0.6s ease-out 0.4s both, subtleGlow 3s ease-in-out infinite",
+                "@keyframes subtleGlow": {
+                  "0%": { opacity: 0.8 },
+                  "50%": { opacity: 1 },
+                  "100%": { opacity: 0.8 },
+                },
+              }}
             >
               Use this range for custom analysis
             </Typography>
@@ -246,13 +528,48 @@ function App() {
         <Box
           component="footer"
           sx={{
-            mt: 4,
-            py: 2,
+            mt: 6,
+            py: 3,
             textAlign: "center",
-            backgroundColor: "rgba(0,0,0,0.05)",
+            background:
+              "linear-gradient(135deg, rgba(25, 118, 210, 0.05) 0%, rgba(66, 165, 245, 0.05) 100%)",
+            backdropFilter: "blur(5px)",
+            borderTop: "1px solid rgba(25, 118, 210, 0.1)",
+            position: "relative",
+            overflow: "hidden",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: "-100%",
+              width: "100%",
+              height: "1px",
+              background:
+                "linear-gradient(90deg, transparent, rgba(25, 118, 210, 0.5), transparent)",
+              animation: "lineShimmer 3s infinite",
+            },
+            "@keyframes lineShimmer": {
+              "0%": { left: "-100%" },
+              "100%": { left: "100%" },
+            },
           }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              animation: "fadeInUp 1s ease-out",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                color: "primary.main",
+                transform: "translateY(-1px)",
+              },
+              "@keyframes fadeInUp": {
+                "0%": { opacity: 0, transform: "translateY(10px)" },
+                "100%": { opacity: 1, transform: "translateY(0)" },
+              },
+            }}
+          >
             Powered by Binance API • Real-time cryptocurrency market data
             visualization
           </Typography>

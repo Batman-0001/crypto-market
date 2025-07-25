@@ -97,32 +97,6 @@ const InteractiveCalendar = ({
     isLoading,
   } = useCryptoData(selectedSymbol, viewType);
 
-  const {
-    focusedDate,
-    isNavigating,
-    containerRef,
-    handleMouseFocus,
-    focusDate,
-    focusToday,
-    isDateFocused,
-  } = useKeyboardNavigation({
-    enabled: enableKeyboardNav,
-    initialFocusDate: currentDate,
-    onNavigate: (date, key) => {
-      // Handle month/year navigation when date moves out of current view
-      if (!isInCurrentMonth(date, currentDate)) {
-        setCurrentDate(new Date(date.getFullYear(), date.getMonth(), 1));
-      }
-    },
-    onSelect: (date) => {
-      setSelectedDate(date);
-      onDateSelect(date, getFilteredDataForDate(date));
-    },
-    onEscape: () => {
-      setSelectedDate(null);
-    },
-  });
-
   // Interactive features hooks
   const dateRangeSelection = useDateRangeSelection((range) => {
     onDateRangeSelect(range);
@@ -207,6 +181,32 @@ const InteractiveCalendar = ({
     },
     [filteredDataLookup, viewType]
   );
+
+  const {
+    focusedDate,
+    isNavigating,
+    containerRef,
+    handleMouseFocus,
+    focusDate,
+    focusToday,
+    isDateFocused,
+  } = useKeyboardNavigation({
+    enabled: enableKeyboardNav,
+    initialFocusDate: currentDate,
+    onNavigate: (date, key) => {
+      // Handle month/year navigation when date moves out of current view
+      if (!isInCurrentMonth(date, currentDate)) {
+        setCurrentDate(new Date(date.getFullYear(), date.getMonth(), 1));
+      }
+    },
+    onSelect: (date) => {
+      setSelectedDate(date);
+      onDateSelect(date, getFilteredDataForDate(date));
+    },
+    onEscape: () => {
+      setSelectedDate(null);
+    },
+  });
 
   // Keyboard shortcuts
   useKeyboardShortcuts({
