@@ -1,10 +1,94 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+
+    <!-- Enhanced viewport meta for responsive design -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+    />
+
+    <!-- Mobile web app capabilities -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Crypto Calendar" />
+
+    <!-- Theme colors for mobile browsers -->
+    <meta name="theme-color" content="#1976d2" />
+    <meta name="msapplication-navbutton-color" content="#1976d2" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <!-- Prevent automatic phone number detection -->
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- SEO and social sharing -->
+    <meta
+      name="description"
+      content="Interactive cryptocurrency market calendar with real-time data visualization, volatility heatmaps, and performance metrics"
+    />
+    <meta
+      name="keywords"
+      content="cryptocurrency, calendar, bitcoin, ethereum, market data, crypto trading"
+    />
+
+    <!-- Touch icons for mobile -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+    <title>
+      Crypto Market Calendar - Interactive Cryptocurrency Data Visualization
+    </title>
+
+    <!-- Preconnect to external resources for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Critical CSS for responsive design -->
+    <style>
+      /* Critical styles for initial load */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        /* Prevent zoom on input focus for iOS */
+        -webkit-text-size-adjust: 100%;
+      }
+
+      /* Loading state */
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Prevent FOUC (Flash of Unstyled Content) */
+      .loading {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .loaded {
+        opacity: 1;
+      }
+
+      /* Touch-friendly elements */
+      button,
+      input,
+      select,
+      textarea {
+        touch-action: manipulation;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

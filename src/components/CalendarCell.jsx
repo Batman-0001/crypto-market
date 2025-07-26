@@ -150,7 +150,7 @@ const CalendarCell = ({
   // Handle mouse events with enhanced functionality
   const handleMouseEnter = useCallback(
     (event) => {
-      if (interactive) {
+      if (interactive && event && event.currentTarget) {
         onMouseEnter(date, cellData, event);
       }
     },
@@ -159,7 +159,7 @@ const CalendarCell = ({
 
   const handleMouseLeave = useCallback(
     (event) => {
-      if (interactive) {
+      if (interactive && event) {
         onMouseLeave(date, event);
       }
     },

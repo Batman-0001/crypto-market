@@ -1,0 +1,228 @@
+/* Responsive Design Enhancements for Crypto Calendar */
+
+/* Mobile-first responsive design principles */
+html {
+  /* Prevent zoom on input focus for iOS */
+  -webkit-text-size-adjust: 100%;
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+}
+
+body {
+  /* Prevent horizontal scrolling */
+  overflow-x: hidden;
+  /* Improve touch scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Disable text selection on touch devices for better UX */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Enable text selection for content areas */
+.selectable-text {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Touch-friendly button styles */
+.touch-friendly {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+/* Prevent zoom on double-tap */
+* {
+  touch-action: manipulation;
+}
+
+/* Responsive typography scaling */
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 769px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* Mobile-specific animations - reduced motion for better performance */
+@media (max-width: 768px) {
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .MuiButton-root {
+    border-width: 2px !important;
+  }
+
+  .MuiPaper-root {
+    border: 2px solid currentColor !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #ffffff;
+  }
+}
+
+/* Landscape orientation optimizations for mobile */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .mobile-header {
+    padding: 8px 0 !important;
+  }
+
+  .mobile-controls {
+    padding: 12px !important;
+  }
+}
+
+/* Focus management for keyboard navigation */
+.keyboard-navigation *:focus {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+/* Loading states optimized for mobile */
+@keyframes mobile-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.mobile-loading {
+  animation: mobile-pulse 1.5s ease-in-out infinite;
+}
+
+/* Improved tap targets for mobile */
+@media (max-width: 768px) {
+  .MuiIconButton-root {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 12px;
+  }
+
+  .MuiButton-root {
+    min-height: 48px;
+    padding: 12px 24px;
+  }
+
+  .MuiChip-root {
+    min-height: 40px;
+  }
+
+  .MuiSelect-select {
+    min-height: 48px;
+    padding: 12px;
+  }
+}
+
+/* Calendar-specific responsive styles */
+.calendar-container {
+  /* Ensure calendar doesn't overflow on small screens */
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.calendar-day {
+  /* Touch-friendly day cells */
+  min-width: 44px;
+  min-height: 44px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+@media (max-width: 480px) {
+  .calendar-day {
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Notification positioning for mobile */
+@media (max-width: 768px) {
+  .MuiSnackbar-root {
+    bottom: 80px !important; /* Above floating action buttons */
+    left: 16px !important;
+    right: 16px !important;
+    width: auto !important;
+  }
+}
+
+/* Improved scrollbar styling for touch devices */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Safe area handling for devices with notches */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .app-header {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .floating-panels {
+    bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .calendar-container {
+    page-break-inside: avoid;
+  }
+}

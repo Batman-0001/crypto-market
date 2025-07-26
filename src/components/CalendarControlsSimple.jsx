@@ -17,8 +17,6 @@ import {
   useMediaQuery,
   Card,
   CardContent,
-  Slider,
-  Chip,
 } from "@mui/material";
 import {
   ZoomIn,
@@ -32,22 +30,18 @@ import {
   TrendingUp,
   Visibility,
   Whatshot,
-  Speed,
-  BarChart as BarChartIcon,
 } from "@mui/icons-material";
 import {
   RiCurrencyLine,
   RiTimeLine,
   RiDropLine,
-  RiThermometerLine,
-  RiBarChartLine,
 } from "react-icons/ri";
 
 /**
  * Simple Calendar Controls without GSAP animations
  * Clean, functional design that always renders properly
  */
-const CalendarControls = ({
+const CalendarControlsSimple = ({
   // Filter props
   selectedSymbol = "BTCUSDT",
   availableSymbols = ["BTCUSDT", "ETHUSDT", "ADAUSDT", "DOTUSDT"],
@@ -72,12 +66,6 @@ const CalendarControls = ({
   // Data props
   onRefreshData = () => {},
   isLoading = false,
-
-  // Metric filter props
-  volatilityThreshold = [0, 10],
-  onVolatilityThresholdChange = () => {},
-  volumeThreshold = [0, 100],
-  onVolumeThresholdChange = () => {},
 
   // Layout props
   isCollapsed = false,
@@ -384,58 +372,44 @@ const CalendarControls = ({
                   </Typography>
                 </Box>
 
-                <Box
+                <ButtonGroup
+                  variant="outlined"
+                  size={isMobile ? "medium" : "small"}
                   sx={{
-                    display: "flex",
-                    gap: 1,
                     width: "100%",
+                    "& .MuiButton-root": {
+                      flex: 1,
+                      borderRadius: "10px",
+                      border: `1px solid ${colors.surface.border}`,
+                      minHeight: { xs: "44px", sm: "auto" },
+                      fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                      fontWeight: 600,
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        background: alpha(colors.secondary.main, 0.1),
+                        borderColor: colors.secondary.main,
+                        transform: "translateY(-1px)",
+                      },
+                      "&.active": {
+                        background: colors.secondary.gradient,
+                        color: "white",
+                        borderColor: "transparent",
+                        boxShadow: `0 4px 15px ${alpha(colors.secondary.main, 0.4)}`,
+                      },
+                    },
                   }}
                 >
                   {viewTypeOptions.map((option) => (
                     <Button
                       key={option.value}
-                      variant={viewType === option.value ? "contained" : "outlined"}
-                      size={isMobile ? "medium" : "small"}
+                      className={viewType === option.value ? "active" : ""}
                       onClick={() => onViewTypeChange(option.value)}
                       startIcon={!isMobile ? option.icon : null}
-                      sx={{
-                        flex: 1,
-                        borderRadius: "12px",
-                        minHeight: { xs: "48px", sm: "40px" },
-                        fontSize: { xs: "0.8rem", sm: "0.875rem" },
-                        fontWeight: 600,
-                        textTransform: "none",
-                        border: `1px solid ${colors.surface.border}`,
-                        transition: "all 0.3s ease",
-                        ...(viewType === option.value
-                          ? {
-                              background: colors.secondary.gradient,
-                              color: "white",
-                              borderColor: "transparent",
-                              boxShadow: `0 4px 15px ${alpha(colors.secondary.main, 0.3)}`,
-                              "&:hover": {
-                                background: colors.secondary.gradient,
-                                transform: "translateY(-1px)",
-                                boxShadow: `0 6px 20px ${alpha(colors.secondary.main, 0.4)}`,
-                              },
-                            }
-                          : {
-                              background: colors.surface.backdrop,
-                              color: colors.secondary.main,
-                              borderColor: alpha(colors.secondary.main, 0.3),
-                              "&:hover": {
-                                background: alpha(colors.secondary.main, 0.1),
-                                borderColor: colors.secondary.main,
-                                transform: "translateY(-1px)",
-                                boxShadow: `0 4px 12px ${alpha(colors.secondary.main, 0.2)}`,
-                              },
-                            }),
-                      }}
                     >
-                      {isMobile ? option.label.charAt(0) : option.label}
+                      {option.label}
                     </Button>
                   ))}
-                </Box>
+                </ButtonGroup>
               </CardContent>
             </Card>
 
@@ -564,248 +538,6 @@ const CalendarControls = ({
             </Card>
           </Box>
 
-          {/* Metric Filters Section */}
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-              gap: 3,
-              mb: 4,
-            }}
-          >
-            {/* Volatility Filter */}
-            <Card
-              sx={{
-                background: colors.surface.glass,
-                backdropFilter: "blur(20px)",
-                border: `1px solid ${colors.surface.border}`,
-                borderRadius: "16px",
-                transition: "all 0.3s ease",
-                position: "relative",
-                overflow: "hidden",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "3px",
-                  background: colors.warning.main,
-                },
-                "&:hover": {
-                  transform: "translateY(-2px)",
-                  boxShadow: "0 8px 25px rgba(245, 158, 11, 0.15)",
-                },
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-                  <RiThermometerLine
-                    size={20}
-                    style={{ color: colors.warning.main }}
-                  />
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontWeight: 700,
-                      color: colors.warning.main,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.5px",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    Volatility Filter
-                  </Typography>
-                  <Chip
-                    label={`${volatilityThreshold[0]}% - ${volatilityThreshold[1]}%`}
-                    size="small"
-                    sx={{
-                      ml: "auto",
-                      background: alpha(colors.warning.main, 0.1),
-                      color: colors.warning.main,
-                      fontWeight: 600,
-                      fontSize: "0.7rem",
-                    }}
-                  />
-                </Box>
-
-                <Box sx={{ px: 1 }}>
-                  <Slider
-                    value={volatilityThreshold}
-                    onChange={(_, newValue) => onVolatilityThresholdChange(newValue)}
-                    valueLabelDisplay="auto"
-                    valueLabelFormat={(value) => `${value}%`}
-                    min={0}
-                    max={20}
-                    step={0.5}
-                    sx={{
-                      color: colors.warning.main,
-                      height: 8,
-                      "& .MuiSlider-track": {
-                        background: `linear-gradient(90deg, ${colors.warning.main}, #f97316)`,
-                        border: "none",
-                        height: 6,
-                      },
-                      "& .MuiSlider-rail": {
-                        background: alpha(colors.warning.main, 0.2),
-                        height: 6,
-                      },
-                      "& .MuiSlider-thumb": {
-                        height: { xs: 24, sm: 20 },
-                        width: { xs: 24, sm: 20 },
-                        background: colors.warning.main,
-                        border: "2px solid white",
-                        boxShadow: `0 4px 12px ${alpha(colors.warning.main, 0.3)}`,
-                        "&:hover": {
-                          boxShadow: `0 6px 16px ${alpha(colors.warning.main, 0.4)}`,
-                        },
-                        "&:focus, &:hover, &.Mui-active, &.Mui-focusVisible": {
-                          boxShadow: `0 6px 16px ${alpha(colors.warning.main, 0.4)}`,
-                        },
-                      },
-                      "& .MuiSlider-valueLabel": {
-                        background: colors.warning.main,
-                        fontSize: "0.75rem",
-                        fontWeight: 600,
-                      },
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      mt: 1,
-                      px: 0.5,
-                    }}
-                  >
-                    <Typography variant="caption" color="text.secondary">
-                      Low Risk
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      High Risk
-                    </Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-
-            {/* Volume Filter */}
-            <Card
-              sx={{
-                background: colors.surface.glass,
-                backdropFilter: "blur(20px)",
-                border: `1px solid ${colors.surface.border}`,
-                borderRadius: "16px",
-                transition: "all 0.3s ease",
-                position: "relative",
-                overflow: "hidden",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "3px",
-                  background: colors.success.gradient,
-                },
-                "&:hover": {
-                  transform: "translateY(-2px)",
-                  boxShadow: "0 8px 25px rgba(16, 185, 129, 0.15)",
-                },
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-                  <RiBarChartLine
-                    size={20}
-                    style={{ color: colors.success.main }}
-                  />
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontWeight: 700,
-                      color: colors.success.main,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.5px",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    Volume Filter
-                  </Typography>
-                  <Chip
-                    label={`${volumeThreshold[0]}% - ${volumeThreshold[1]}%`}
-                    size="small"
-                    sx={{
-                      ml: "auto",
-                      background: alpha(colors.success.main, 0.1),
-                      color: colors.success.main,
-                      fontWeight: 600,
-                      fontSize: "0.7rem",
-                    }}
-                  />
-                </Box>
-
-                <Box sx={{ px: 1 }}>
-                  <Slider
-                    value={volumeThreshold}
-                    onChange={(_, newValue) => onVolumeThresholdChange(newValue)}
-                    valueLabelDisplay="auto"
-                    valueLabelFormat={(value) => `${value}%`}
-                    min={0}
-                    max={100}
-                    step={5}
-                    sx={{
-                      color: colors.success.main,
-                      height: 8,
-                      "& .MuiSlider-track": {
-                        background: colors.success.gradient,
-                        border: "none",
-                        height: 6,
-                      },
-                      "& .MuiSlider-rail": {
-                        background: alpha(colors.success.main, 0.2),
-                        height: 6,
-                      },
-                      "& .MuiSlider-thumb": {
-                        height: { xs: 24, sm: 20 },
-                        width: { xs: 24, sm: 20 },
-                        background: colors.success.main,
-                        border: "2px solid white",
-                        boxShadow: `0 4px 12px ${alpha(colors.success.main, 0.3)}`,
-                        "&:hover": {
-                          boxShadow: `0 6px 16px ${alpha(colors.success.main, 0.4)}`,
-                        },
-                        "&:focus, &:hover, &.Mui-active, &.Mui-focusVisible": {
-                          boxShadow: `0 6px 16px ${alpha(colors.success.main, 0.4)}`,
-                        },
-                      },
-                      "& .MuiSlider-valueLabel": {
-                        background: colors.success.main,
-                        fontSize: "0.75rem",
-                        fontWeight: 600,
-                      },
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      mt: 1,
-                      px: 0.5,
-                    }}
-                  >
-                    <Typography variant="caption" color="text.secondary">
-                      Low Volume
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      High Volume
-                    </Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
-
           {/* Action Bar */}
           <Box
             sx={{
@@ -901,4 +633,4 @@ const CalendarControls = ({
   );
 };
 
-export default CalendarControls;
+export default CalendarControlsSimple;

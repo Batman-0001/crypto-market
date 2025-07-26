@@ -377,7 +377,7 @@ const InteractiveCalendar = ({
       }
 
       // Show tooltip
-      if (showTooltips && cellData) {
+      if (showTooltips && cellData && event) {
         tooltip.showTooltip(
           {
             date,

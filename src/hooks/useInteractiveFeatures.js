@@ -128,14 +128,30 @@ export const useTooltip = () => {
   const showTooltip = useCallback((data, event) => {
     clearTimeout(tooltipTimeout.current);
 
+    // Validate event and currentTarget before proceeding
+    if (!event || !event.currentTarget) {
+      console.warn('showTooltip: Invalid event or currentTarget');
+      return;
+    }
+
     tooltipTimeout.current = setTimeout(() => {
-      const rect = event.currentTarget.getBoundingClientRect();
-      setTooltipPosition({
-        x: rect.left + rect.width / 2,
-        y: rect.top - 10,
-      });
-      setTooltipData(data);
-      setTooltipOpen(true);
+      // Double-check currentTarget still exists in timeout
+      if (!event.currentTarget) {
+        console.warn('showTooltip: currentTarget is null in timeout');
+        return;
+      }
+
+      try {
+        const rect = event.currentTarget.getBoundingClientRect();
+        setTooltipPosition({
+          x: rect.left + rect.width / 2,
+          y: rect.top - 10,
+        });
+        setTooltipData(data);
+        setTooltipOpen(true);
+      } catch (error) {
+        console.error('Error getting bounding rect:', error);
+      }
     }, 300); // 300ms delay
   }, []);
 
@@ -146,6 +162,13 @@ export const useTooltip = () => {
     setTooltipData(null);
   }, []);
 
+  // Cleanup function to handle component unmounting
+  useEffect(() => {
+    return () => {
+      clearTimeout(tooltipTimeout.current);
+    };
+  }, []);
+
   // Update tooltip position on scroll/resize
   useEffect(() => {
     const handleScroll = () => {
@@ -154,12 +177,20 @@ export const useTooltip = () => {
       }
     };
 
+    const handleVisibilityChange = () => {
+      if (document.hidden && tooltipOpen) {
+        hideTooltip();
+      }
+    };
+
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", handleScroll);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       clearTimeout(tooltipTimeout.current);
     };
   }, [tooltipOpen, hideTooltip]);
