@@ -130,14 +130,14 @@ export const useTooltip = () => {
 
     // Validate event and currentTarget before proceeding
     if (!event || !event.currentTarget) {
-      console.warn('showTooltip: Invalid event or currentTarget');
+      console.warn("showTooltip: Invalid event or currentTarget");
       return;
     }
 
     tooltipTimeout.current = setTimeout(() => {
       // Double-check currentTarget still exists in timeout
       if (!event.currentTarget) {
-        console.warn('showTooltip: currentTarget is null in timeout');
+        console.warn("showTooltip: currentTarget is null in timeout");
         return;
       }
 
@@ -150,7 +150,7 @@ export const useTooltip = () => {
         setTooltipData(data);
         setTooltipOpen(true);
       } catch (error) {
-        console.error('Error getting bounding rect:', error);
+        console.error("Error getting bounding rect:", error);
       }
     }, 300); // 300ms delay
   }, []);

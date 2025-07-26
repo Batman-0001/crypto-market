@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, Typography, Button, Alert, AlertTitle } from '@mui/material';
-import { ErrorOutline, Refresh } from '@mui/icons-material';
+import React from "react";
+import { Box, Typography, Button, Alert, AlertTitle } from "@mui/material";
+import { ErrorOutline, Refresh } from "@mui/icons-material";
 
 /**
  * Error Boundary Component
@@ -9,11 +9,11 @@ import { ErrorOutline, Refresh } from '@mui/icons-material';
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      hasError: false, 
+    this.state = {
+      hasError: false,
       error: null,
       errorInfo: null,
-      retryCount: 0
+      retryCount: 0,
     };
   }
 
@@ -24,11 +24,11 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     // Log error details
-    console.error('Error Boundary caught an error:', error, errorInfo);
-    
+    console.error("Error Boundary caught an error:", error, errorInfo);
+
     this.setState({
       error: error,
-      errorInfo: errorInfo
+      errorInfo: errorInfo,
     });
 
     // Send error to monitoring service if available
@@ -38,11 +38,11 @@ class ErrorBoundary extends React.Component {
   }
 
   handleRetry = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       hasError: false,
       error: null,
       errorInfo: null,
-      retryCount: prevState.retryCount + 1
+      retryCount: prevState.retryCount + 1,
     }));
   };
 
@@ -53,30 +53,30 @@ class ErrorBoundary extends React.Component {
         <Box
           sx={{
             p: 4,
-            textAlign: 'center',
-            background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+            textAlign: "center",
+            background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
             borderRadius: 2,
-            border: '1px solid #e2e8f0',
+            border: "1px solid #e2e8f0",
             maxWidth: 600,
-            mx: 'auto',
-            mt: 4
+            mx: "auto",
+            mt: 4,
           }}
         >
           <Alert severity="error" sx={{ mb: 3 }}>
             <AlertTitle>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <ErrorOutline />
                 Something went wrong
               </Box>
             </AlertTitle>
             <Typography variant="body2" sx={{ mt: 1 }}>
-              {this.props.fallbackMessage || 
-                'An unexpected error occurred. Please try refreshing the page.'}
+              {this.props.fallbackMessage ||
+                "An unexpected error occurred. Please try refreshing the page."}
             </Typography>
           </Alert>
 
-          {process.env.NODE_ENV === 'development' && this.state.error && (
-            <Box sx={{ textAlign: 'left', mb: 3 }}>
+          {process.env.NODE_ENV === "development" && this.state.error && (
+            <Box sx={{ textAlign: "left", mb: 3 }}>
               <Typography variant="h6" color="error" sx={{ mb: 1 }}>
                 Error Details:
               </Typography>
@@ -84,12 +84,12 @@ class ErrorBoundary extends React.Component {
                 component="pre"
                 sx={{
                   p: 2,
-                  bgcolor: '#f5f5f5',
+                  bgcolor: "#f5f5f5",
                   borderRadius: 1,
-                  fontSize: '0.8rem',
-                  overflow: 'auto',
+                  fontSize: "0.8rem",
+                  overflow: "auto",
                   maxHeight: 200,
-                  border: '1px solid #ddd'
+                  border: "1px solid #ddd",
                 }}
               >
                 {this.state.error.toString()}
@@ -98,31 +98,32 @@ class ErrorBoundary extends React.Component {
             </Box>
           )}
 
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+          <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
             <Button
               variant="contained"
               startIcon={<Refresh />}
               onClick={this.handleRetry}
               sx={{
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                }
+                background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                "&:hover": {
+                  background:
+                    "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+                },
               }}
             >
               Try Again
             </Button>
-            
+
             <Button
               variant="outlined"
               onClick={() => window.location.reload()}
               sx={{
-                borderColor: '#6366f1',
-                color: '#6366f1',
-                '&:hover': {
-                  borderColor: '#4f46e5',
-                  backgroundColor: 'rgba(99, 102, 241, 0.04)'
-                }
+                borderColor: "#6366f1",
+                color: "#6366f1",
+                "&:hover": {
+                  borderColor: "#4f46e5",
+                  backgroundColor: "rgba(99, 102, 241, 0.04)",
+                },
               }}
             >
               Reload Page
@@ -130,7 +131,11 @@ class ErrorBoundary extends React.Component {
           </Box>
 
           {this.state.retryCount > 0 && (
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 2, display: "block" }}
+            >
               Retry attempts: {this.state.retryCount}
             </Typography>
           )}

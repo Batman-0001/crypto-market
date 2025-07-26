@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   Box,
   Grid,
@@ -8,7 +8,10 @@ import {
   Alert,
   Fade,
   Backdrop,
+  useTheme,
+  alpha,
 } from "@mui/material";
+import { gsap } from "gsap";
 import {
   generateCalendarDays,
   generateCalendarWeeks,
@@ -67,6 +70,14 @@ const InteractiveCalendar = ({
     "SOLUSDT",
   ],
 }) => {
+  const theme = useTheme();
+
+  // Animation refs
+  const calendarRef = useRef(null);
+  const headerRef = useRef(null);
+  const gridRef = useRef(null);
+  const cellRefs = useRef([]);
+
   // State management
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [viewType, setViewType] = useState(initialViewType);
@@ -78,11 +89,115 @@ const InteractiveCalendar = ({
   const [controlsCollapsed, setControlsCollapsed] = useState(false);
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [dashboardData, setDashboardData] = useState(null);
+  const [animationsEnabled, setAnimationsEnabled] = useState(true);
 
   // Debug dashboard state
   useEffect(() => {
     console.log("Dashboard state changed:", { dashboardOpen, dashboardData });
   }, [dashboardOpen, dashboardData]);
+
+  // GSAP Animation Functions
+  const animateCalendarEntry = useCallback(() => {
+    if (!animationsEnabled || !calendarRef.current) return;
+
+    gsap.fromTo(
+      calendarRef.current,
+      {
+        opacity: 0,
+        y: 30,
+        scale: 0.95,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        ease: "power3.out",
+      }
+    );
+  }, [animationsEnabled]);
+
+  const animateHeaderChange = useCallback(() => {
+    if (!animationsEnabled || !headerRef.current) return;
+
+    gsap.fromTo(
+      headerRef.current,
+      { x: -20, opacity: 0.7 },
+      { x: 0, opacity: 1, duration: 0.4, ease: "power2.out" }
+    );
+  }, [animationsEnabled]);
+
+  const animateGridTransition = useCallback(() => {
+    if (!animationsEnabled || !gridRef.current) return;
+
+    gsap.fromTo(
+      gridRef.current.children,
+      {
+        opacity: 0,
+        scale: 0.8,
+        rotationY: 15,
+      },
+      {
+        opacity: 1,
+        scale: 1,
+        rotationY: 0,
+        duration: 0.6,
+        stagger: 0.02,
+        ease: "back.out(1.7)",
+      }
+    );
+  }, [animationsEnabled]);
+
+  const animateCellHover = useCallback(
+    (element, isHover = true) => {
+      if (!animationsEnabled || !element) return;
+
+      if (isHover) {
+        gsap.to(element, {
+          scale: 1.05,
+          rotationY: 5,
+          z: 10,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      } else {
+        gsap.to(element, {
+          scale: 1,
+          rotationY: 0,
+          z: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      }
+    },
+    [animationsEnabled]
+  );
+
+  const animateCellClick = useCallback(
+    (element) => {
+      if (!animationsEnabled || !element) return;
+
+      gsap.to(element, {
+        scale: 0.95,
+        duration: 0.1,
+        yoyo: true,
+        repeat: 1,
+        ease: "power2.inOut",
+      });
+    },
+    [animationsEnabled]
+  );
+
+  // Initialize animations
+  useEffect(() => {
+    animateCalendarEntry();
+  }, [animateCalendarEntry]);
+
+  // Animate on date/view changes
+  useEffect(() => {
+    animateHeaderChange();
+    setTimeout(() => animateGridTransition(), 100);
+  }, [currentDate, viewType, animateHeaderChange, animateGridTransition]);
 
   // Hooks
   const {
@@ -288,19 +403,38 @@ const InteractiveCalendar = ({
 
   // Handle cell click
   const handleCellClick = useCallback(
-    (date, cellData) => {
+    (date, cellData, event) => {
       console.log("Cell clicked:", { date, cellData });
+
+      // Animate click
+      if (event?.currentTarget) {
+        animateCellClick(event.currentTarget);
+      }
+
       setSelectedDate(date);
       handleMouseFocus(date);
       onDateSelect(date, cellData);
     },
-    [handleMouseFocus, onDateSelect]
+    [handleMouseFocus, onDateSelect, animateCellClick]
   );
 
   // Handle cell hover
-  const handleCellHover = useCallback((date, cellData) => {
-    setHoveredDate(date);
-  }, []);
+  const handleCellHover = useCallback(
+    (date, cellData, event, isEntering = true) => {
+      if (isEntering) {
+        setHoveredDate(date);
+        if (event?.currentTarget) {
+          animateCellHover(event.currentTarget, true);
+        }
+      } else {
+        setHoveredDate(null);
+        if (event?.currentTarget) {
+          animateCellHover(event.currentTarget, false);
+        }
+      }
+    },
+    [animateCellHover]
+  );
 
   // Handle cell leave
   const handleCellLeave = useCallback(() => {
@@ -458,34 +592,8 @@ const InteractiveCalendar = ({
   const calendarDates = generateCalendarData();
   const dataLookup = createDataLookup();
 
-  // Render week day headers for daily view
-  const renderWeekDayHeaders = () => {
-    if (viewType !== VIEW_TYPES.DAILY) return null;
-
-    return (
-      <Grid container sx={{ mb: 1 }}>
-        {WEEK_DAYS.map((day) => (
-          <Grid item xs key={day}>
-            <Typography
-              variant="caption"
-              sx={{
-                display: "block",
-                textAlign: "center",
-                fontWeight: "bold",
-                color: "text.secondary",
-                py: 1,
-              }}
-            >
-              {day.substring(0, 3)}
-            </Typography>
-          </Grid>
-        ))}
-      </Grid>
-    );
-  };
-
-  // Render calendar grid
-  const renderCalendarGrid = () => {
+  // Render modern calendar grid with GSAP animations
+  const renderModernCalendarGrid = () => {
     const cellsPerRow =
       viewType === VIEW_TYPES.DAILY
         ? 7
@@ -494,46 +602,189 @@ const InteractiveCalendar = ({
         : 3;
 
     return (
-      <Grid container spacing={0.5}>
+      <Grid
+        container
+        spacing={1.5}
+        sx={{
+          "& .MuiGrid-item": {
+            transition: "all 0.3s ease",
+          },
+        }}
+      >
         {calendarDates.map((date, index) => {
           const cellKey = getCalendarCellKey(date, viewType);
           const cellData = filteredDataLookup.get(cellKey);
           const isSelected =
             selectedDate && date.getTime() === selectedDate.getTime();
           const isFocused = isDateFocused(date);
+          const isToday = new Date().toDateString() === date.toDateString();
 
           return (
-            <Grid item xs={12 / cellsPerRow} key={`${cellKey}-${index}`}>
-              <CalendarCell
-                date={date}
-                cellData={cellData}
-                dataRanges={dataRanges}
-                currentMonth={currentDate}
-                viewType={viewType}
-                isSelected={isSelected}
-                isFocused={isFocused}
-                isInSelection={dateRangeSelection.isDateInSelection(date)}
-                isSelectionBoundary={dateRangeSelection.isSelectionBoundary(
-                  date
+            <Grid
+              item
+              xs={12 / cellsPerRow}
+              key={`${cellKey}-${index}`}
+              ref={(el) => (cellRefs.current[index] = el)}
+            >
+              <Box
+                sx={{
+                  position: "relative",
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  transformOrigin: "center",
+                  transformStyle: "preserve-3d",
+                  cursor: "pointer",
+                  background: isSelected
+                    ? `linear-gradient(135deg, 
+                      ${alpha(theme.palette.primary.main, 0.15)} 0%, 
+                      ${alpha(theme.palette.primary.main, 0.08)} 100%)`
+                    : isToday
+                    ? `linear-gradient(135deg, 
+                      ${alpha(theme.palette.secondary.main, 0.12)} 0%, 
+                      ${alpha(theme.palette.secondary.main, 0.06)} 100%)`
+                    : `linear-gradient(135deg, 
+                      ${alpha(theme.palette.background.paper, 0.8)} 0%, 
+                      ${alpha(theme.palette.background.paper, 0.4)} 100%)`,
+                  backdropFilter: "blur(10px)",
+                  border: isSelected
+                    ? `2px solid ${theme.palette.primary.main}`
+                    : isToday
+                    ? `2px solid ${theme.palette.secondary.main}`
+                    : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                  boxShadow: isSelected
+                    ? `0 8px 32px ${alpha(theme.palette.primary.main, 0.25)},
+                     inset 0 1px 0 ${alpha("#ffffff", 0.2)}`
+                    : isToday
+                    ? `0 6px 24px ${alpha(theme.palette.secondary.main, 0.2)},
+                     inset 0 1px 0 ${alpha("#ffffff", 0.1)}`
+                    : `0 2px 8px ${alpha("#000000", 0.04)},
+                     inset 0 1px 0 ${alpha("#ffffff", 0.05)}`,
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  "&:hover": {
+                    transform: "translateY(-4px) scale(1.02)",
+                    boxShadow: `0 16px 48px ${alpha("#000000", 0.12)},
+                               inset 0 1px 0 ${alpha("#ffffff", 0.2)}`,
+                    background: `linear-gradient(135deg, 
+                      ${alpha(theme.palette.primary.main, 0.1)} 0%, 
+                      ${alpha(theme.palette.primary.main, 0.05)} 100%)`,
+                    border: `1px solid ${alpha(
+                      theme.palette.primary.main,
+                      0.3
+                    )}`,
+                  },
+                  "&:active": {
+                    transform: "translateY(-2px) scale(0.98)",
+                  },
+                }}
+                onMouseEnter={(e) => handleCellHover(date, cellData, e, true)}
+                onMouseLeave={(e) => handleCellHover(date, cellData, e, false)}
+                onClick={(e) => handleCellClick(date, cellData, e)}
+              >
+                {/* Shimmer effect */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    left: "-100%",
+                    width: "100%",
+                    height: "100%",
+                    background: `linear-gradient(90deg, 
+                      transparent 0%, 
+                      ${alpha("#ffffff", 0.4)} 50%, 
+                      transparent 100%)`,
+                    animation: "shimmer 3s infinite",
+                    "@keyframes shimmer": {
+                      "0%": { left: "-100%" },
+                      "100%": { left: "100%" },
+                    },
+                  }}
+                />
+
+                <CalendarCell
+                  date={date}
+                  cellData={cellData}
+                  dataRanges={dataRanges}
+                  currentMonth={currentDate}
+                  viewType={viewType}
+                  isSelected={isSelected}
+                  isFocused={isFocused}
+                  isInSelection={dateRangeSelection.isDateInSelection(date)}
+                  isSelectionBoundary={dateRangeSelection.isSelectionBoundary(
+                    date
+                  )}
+                  isHovered={
+                    hoveredDate && hoveredDate.getTime() === date.getTime()
+                  }
+                  zoomLevel={zoom.zoomLevel}
+                  onClick={handleEnhancedCellClick}
+                  onDoubleClick={handleCellDoubleClick}
+                  onRightClick={handleCellRightClick}
+                  onMouseEnter={handleCellMouseEnter}
+                  onMouseLeave={handleCellMouseLeave}
+                  showTooltip={showTooltips}
+                  showVolatilityHeatmap={filters.filters.showVolatilityHeatmap}
+                  showLiquidityIndicators={
+                    filters.filters.showLiquidityIndicators
+                  }
+                  showPerformanceMetrics={
+                    filters.filters.showPerformanceMetrics
+                  }
+                  interactive={true}
+                  selectionMode={dateRangeSelection.selectionMode}
+                  sx={{
+                    background: "transparent",
+                    border: "none",
+                    boxShadow: "none",
+                    borderRadius: 0,
+                  }}
+                />
+
+                {/* Modern selection indicator */}
+                {isSelected && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 4,
+                      right: 4,
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      background: theme.palette.primary.main,
+                      boxShadow: `0 0 8px ${alpha(
+                        theme.palette.primary.main,
+                        0.6
+                      )}`,
+                      animation: "pulse 2s infinite",
+                      "@keyframes pulse": {
+                        "0%, 100%": { transform: "scale(1)", opacity: 1 },
+                        "50%": { transform: "scale(1.2)", opacity: 0.8 },
+                      },
+                    }}
+                  />
                 )}
-                isHovered={
-                  hoveredDate && hoveredDate.getTime() === date.getTime()
-                }
-                zoomLevel={zoom.zoomLevel}
-                onClick={handleEnhancedCellClick}
-                onDoubleClick={handleCellDoubleClick}
-                onRightClick={handleCellRightClick}
-                onMouseEnter={handleCellMouseEnter}
-                onMouseLeave={handleCellMouseLeave}
-                showTooltip={showTooltips}
-                showVolatilityHeatmap={filters.filters.showVolatilityHeatmap}
-                showLiquidityIndicators={
-                  filters.filters.showLiquidityIndicators
-                }
-                showPerformanceMetrics={filters.filters.showPerformanceMetrics}
-                interactive={true}
-                selectionMode={dateRangeSelection.selectionMode}
-              />
+
+                {/* Today indicator */}
+                {isToday && !isSelected && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      bottom: 4,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      width: 20,
+                      height: 2,
+                      borderRadius: "1px",
+                      background: `linear-gradient(90deg, 
+                        ${theme.palette.secondary.main} 0%, 
+                        ${alpha(theme.palette.secondary.main, 0.6)} 100%)`,
+                      boxShadow: `0 0 4px ${alpha(
+                        theme.palette.secondary.main,
+                        0.4
+                      )}`,
+                    }}
+                  />
+                )}
+              </Box>
             </Grid>
           );
         })}
@@ -650,31 +901,132 @@ const InteractiveCalendar = ({
       )}
 
       {/* Header */}
-      <CalendarHeader
-        currentDate={currentDate}
-        viewType={viewType}
-        selectedSymbol={selectedSymbol}
-        onDateChange={handleDateChange}
-        onViewTypeChange={handleViewTypeChange}
-        onSymbolChange={handleSymbolChange}
-        onRefresh={refreshData}
-        onToday={handleToday}
-        isLoading={isLoading}
-        lastUpdated={lastUpdated}
-        dataRanges={dataRanges}
-        enableKeyboardNavigation={enableKeyboardNav}
-      />
+      <Box ref={headerRef}>
+        <CalendarHeader
+          currentDate={currentDate}
+          viewType={viewType}
+          selectedSymbol={selectedSymbol}
+          onDateChange={handleDateChange}
+          onViewTypeChange={handleViewTypeChange}
+          onSymbolChange={handleSymbolChange}
+          onRefresh={refreshData}
+          onToday={handleToday}
+          isLoading={isLoading}
+          lastUpdated={lastUpdated}
+          dataRanges={dataRanges}
+          enableKeyboardNavigation={enableKeyboardNav}
+        />
+      </Box>
 
-      {/* Calendar Body */}
-      <Paper elevation={0} sx={{ p: 2 }}>
+      {/* Modern Calendar Body */}
+      <Box
+        ref={calendarRef}
+        sx={{
+          background: `linear-gradient(145deg, 
+            ${alpha("#000000", 0.02)} 0%, 
+            ${alpha("#ffffff", 0.08)} 50%, 
+            ${alpha("#000000", 0.02)} 100%)`,
+          borderRadius: "24px",
+          padding: { xs: 2, sm: 3, md: 4 },
+          position: "relative",
+          overflow: "hidden",
+          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+          boxShadow: `
+            0 1px 3px ${alpha("#000000", 0.08)},
+            0 8px 32px ${alpha("#000000", 0.04)},
+            inset 0 1px 0 ${alpha("#ffffff", 0.1)}
+          `,
+          backdropFilter: "blur(20px)",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "1px",
+            background: `linear-gradient(90deg, 
+              transparent 0%, 
+              ${alpha(theme.palette.primary.main, 0.2)} 20%, 
+              ${alpha(theme.palette.primary.main, 0.4)} 50%, 
+              ${alpha(theme.palette.primary.main, 0.2)} 80%, 
+              transparent 100%)`,
+          },
+          "&::after": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: `radial-gradient(circle at 50% 0%, 
+              ${alpha(theme.palette.primary.main, 0.03)} 0%, 
+              transparent 70%)`,
+            pointerEvents: "none",
+          },
+        }}
+      >
         <Fade in={!isLoading}>
-          <Box>
-            {renderWeekDayHeaders()}
-            {renderCalendarGrid()}
+          <Box sx={{ position: "relative", zIndex: 2 }}>
+            {/* Modern Week Headers */}
+            {viewType === VIEW_TYPES.DAILY && (
+              <Grid
+                container
+                sx={{
+                  mb: 3,
+                  borderRadius: "16px",
+                  background: alpha(theme.palette.background.paper, 0.6),
+                  backdropFilter: "blur(10px)",
+                  border: `1px solid ${alpha(theme.palette.divider, 0.08)}`,
+                  p: 1.5,
+                }}
+              >
+                {WEEK_DAYS.map((day, index) => (
+                  <Grid item xs key={day}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: "block",
+                        textAlign: "center",
+                        fontWeight: 700,
+                        fontSize: "0.75rem",
+                        letterSpacing: "0.5px",
+                        textTransform: "uppercase",
+                        color: alpha(theme.palette.text.primary, 0.7),
+                        background:
+                          index % 2 === 0
+                            ? alpha(theme.palette.primary.main, 0.04)
+                            : "transparent",
+                        borderRadius: "8px",
+                        py: 1,
+                        transition: "all 0.3s ease",
+                        "&:hover": {
+                          background: alpha(theme.palette.primary.main, 0.08),
+                          color: theme.palette.primary.main,
+                          transform: "translateY(-1px)",
+                        },
+                      }}
+                    >
+                      {day.substring(0, 3)}
+                    </Typography>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+
+            {/* Modern Calendar Grid */}
+            <Box
+              ref={gridRef}
+              sx={{
+                perspective: "1000px",
+                transformStyle: "preserve-3d",
+              }}
+            >
+              {renderModernCalendarGrid()}
+            </Box>
           </Box>
         </Fade>
 
-        {/* Loading overlay */}
+        {/* Modern Loading Overlay */}
         {isLoading && data && data.length > 0 && (
           <Box
             sx={{
@@ -683,17 +1035,39 @@ const InteractiveCalendar = ({
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: "rgba(255, 255, 255, 0.7)",
+              background: `linear-gradient(135deg, 
+                ${alpha("#ffffff", 0.9)} 0%, 
+                ${alpha("#ffffff", 0.7)} 100%)`,
+              backdropFilter: "blur(8px)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               zIndex: 1000,
+              borderRadius: "24px",
             }}
           >
-            <CircularProgress size={24} />
+            <Box sx={{ textAlign: "center" }}>
+              <CircularProgress
+                size={32}
+                thickness={3}
+                sx={{
+                  color: theme.palette.primary.main,
+                  mb: 2,
+                }}
+              />
+              <Typography
+                variant="body2"
+                sx={{
+                  color: alpha(theme.palette.text.primary, 0.8),
+                  fontWeight: 500,
+                }}
+              >
+                Updating data...
+              </Typography>
+            </Box>
           </Box>
         )}
-      </Paper>
+      </Box>
 
       {/* Error notification */}
       {error && data && data.length > 0 && (

@@ -31,11 +31,7 @@ import {
   Visibility,
   Whatshot,
 } from "@mui/icons-material";
-import {
-  RiCurrencyLine,
-  RiTimeLine,
-  RiDropLine,
-} from "react-icons/ri";
+import { RiCurrencyLine, RiTimeLine, RiDropLine } from "react-icons/ri";
 
 /**
  * Simple Calendar Controls without GSAP animations
@@ -78,12 +74,14 @@ const CalendarControlsSimple = ({
   const colors = {
     primary: {
       main: "#6366f1",
-      gradient: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)",
+      gradient:
+        "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)",
       glow: "0 0 20px rgba(99, 102, 241, 0.3)",
     },
     secondary: {
       main: "#06b6d4",
-      gradient: "linear-gradient(135deg, #06b6d4 0%, #0ea5e9 50%, #3b82f6 100%)",
+      gradient:
+        "linear-gradient(135deg, #06b6d4 0%, #0ea5e9 50%, #3b82f6 100%)",
     },
     success: {
       main: "#10b981",
@@ -102,14 +100,41 @@ const CalendarControlsSimple = ({
   const symbolOptions = availableSymbols.map((symbol) => ({
     value: symbol,
     label: symbol.replace("USDT", "/USDT"),
-    icon: symbol.includes("BTC") ? "₿" : symbol.includes("ETH") ? "Ξ" : symbol.includes("ADA") ? "₳" : "●",
-    color: symbol.includes("BTC") ? "#f7931a" : symbol.includes("ETH") ? "#627eea" : symbol.includes("ADA") ? "#0033ad" : colors.primary.main,
+    icon: symbol.includes("BTC")
+      ? "₿"
+      : symbol.includes("ETH")
+      ? "Ξ"
+      : symbol.includes("ADA")
+      ? "₳"
+      : "●",
+    color: symbol.includes("BTC")
+      ? "#f7931a"
+      : symbol.includes("ETH")
+      ? "#627eea"
+      : symbol.includes("ADA")
+      ? "#0033ad"
+      : colors.primary.main,
   }));
 
   const viewTypeOptions = [
-    { value: "daily", label: "Daily", icon: <DateRange />, color: colors.primary.main },
-    { value: "weekly", label: "Weekly", icon: <ShowChart />, color: colors.secondary.main },
-    { value: "monthly", label: "Monthly", icon: <BarChart />, color: colors.success.main },
+    {
+      value: "daily",
+      label: "Daily",
+      icon: <DateRange />,
+      color: colors.primary.main,
+    },
+    {
+      value: "weekly",
+      label: "Weekly",
+      icon: <ShowChart />,
+      color: colors.secondary.main,
+    },
+    {
+      value: "monthly",
+      label: "Monthly",
+      icon: <BarChart />,
+      color: colors.success.main,
+    },
   ];
 
   return (
@@ -203,7 +228,10 @@ const CalendarControlsSimple = ({
           </Box>
         </Box>
 
-        <Tooltip title={isCollapsed ? "Expand Controls" : "Collapse Controls"} arrow>
+        <Tooltip
+          title={isCollapsed ? "Expand Controls" : "Collapse Controls"}
+          arrow
+        >
           <IconButton
             onClick={() => onToggleCollapse(!isCollapsed)}
             sx={{
@@ -268,7 +296,14 @@ const CalendarControlsSimple = ({
               }}
             >
               <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    mb: 2,
+                  }}
+                >
                   <RiCurrencyLine
                     size={20}
                     style={{ color: colors.primary.main }}
@@ -308,17 +343,31 @@ const CalendarControlsSimple = ({
                       },
                       "&.Mui-focused": {
                         borderColor: colors.primary.main,
-                        boxShadow: `0 0 0 2px ${alpha(colors.primary.main, 0.2)}`,
+                        boxShadow: `0 0 0 2px ${alpha(
+                          colors.primary.main,
+                          0.2
+                        )}`,
                       },
                     }}
                   >
                     {symbolOptions.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, width: "100%" }}>
-                          <Typography sx={{ fontSize: "1.2rem", color: option.color }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 2,
+                            width: "100%",
+                          }}
+                        >
+                          <Typography
+                            sx={{ fontSize: "1.2rem", color: option.color }}
+                          >
                             {option.icon}
                           </Typography>
-                          <Typography sx={{ fontWeight: 600 }}>{option.label}</Typography>
+                          <Typography sx={{ fontWeight: 600 }}>
+                            {option.label}
+                          </Typography>
                         </Box>
                       </MenuItem>
                     ))}
@@ -353,7 +402,14 @@ const CalendarControlsSimple = ({
               }}
             >
               <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    mb: 2,
+                  }}
+                >
                   <RiTimeLine
                     size={20}
                     style={{ color: colors.secondary.main }}
@@ -394,7 +450,10 @@ const CalendarControlsSimple = ({
                         background: colors.secondary.gradient,
                         color: "white",
                         borderColor: "transparent",
-                        boxShadow: `0 4px 15px ${alpha(colors.secondary.main, 0.4)}`,
+                        boxShadow: `0 4px 15px ${alpha(
+                          colors.secondary.main,
+                          0.4
+                        )}`,
                       },
                     },
                   }}
@@ -440,8 +499,17 @@ const CalendarControlsSimple = ({
               }}
             >
               <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-                  <Visibility sx={{ color: colors.success.main, fontSize: "1.25rem" }} />
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    mb: 3,
+                  }}
+                >
+                  <Visibility
+                    sx={{ color: colors.success.main, fontSize: "1.25rem" }}
+                  />
                   <Typography
                     variant="subtitle2"
                     sx={{
@@ -510,7 +578,9 @@ const CalendarControlsSimple = ({
                             onChange={(e) => toggle.onChange(e.target.checked)}
                             sx={{
                               "& .MuiSwitch-thumb": {
-                                background: toggle.checked ? toggle.color : "#ccc",
+                                background: toggle.checked
+                                  ? toggle.color
+                                  : "#ccc",
                               },
                               "& .MuiSwitch-track": {
                                 backgroundColor: alpha(toggle.color, 0.3),
@@ -519,13 +589,23 @@ const CalendarControlsSimple = ({
                           />
                         }
                         label={
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                            <Box sx={{ color: toggle.color }}>{toggle.icon}</Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Box sx={{ color: toggle.color }}>
+                              {toggle.icon}
+                            </Box>
                             <Typography
                               fontSize={isMobile ? "0.8rem" : "0.875rem"}
                               fontWeight={600}
                             >
-                              {isMobile ? toggle.label.split(" ")[0] : toggle.label}
+                              {isMobile
+                                ? toggle.label.split(" ")[0]
+                                : toggle.label}
                             </Typography>
                           </Box>
                         }
