@@ -37,7 +37,7 @@ import CalendarControls from "./CalendarControls";
 import CalendarTooltip from "./CalendarTooltip";
 import DateDetailPanel from "./DateDetailPanel";
 import DataDashboard from "./DataDashboard";
-import { VIEW_TYPES, DEFAULT_SYMBOL, WEEK_DAYS } from "../constants";
+import { VIEW_TYPES, DEFAULT_SYMBOL } from "../constants";
 
 /**
  * Interactive Calendar component with cryptocurrency market data visualization
@@ -967,52 +967,6 @@ const InteractiveCalendar = ({
       >
         <Fade in={!isLoading}>
           <Box sx={{ position: "relative", zIndex: 2 }}>
-            {/* Modern Week Headers */}
-            {viewType === VIEW_TYPES.DAILY && (
-              <Grid
-                container
-                sx={{
-                  mb: 3,
-                  borderRadius: "16px",
-                  background: alpha(theme.palette.background.paper, 0.6),
-                  backdropFilter: "blur(10px)",
-                  border: `1px solid ${alpha(theme.palette.divider, 0.08)}`,
-                  p: 1.5,
-                }}
-              >
-                {WEEK_DAYS.map((day, index) => (
-                  <Grid item xs key={day}>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        display: "block",
-                        textAlign: "center",
-                        fontWeight: 700,
-                        fontSize: "0.75rem",
-                        letterSpacing: "0.5px",
-                        textTransform: "uppercase",
-                        color: alpha(theme.palette.text.primary, 0.7),
-                        background:
-                          index % 2 === 0
-                            ? alpha(theme.palette.primary.main, 0.04)
-                            : "transparent",
-                        borderRadius: "8px",
-                        py: 1,
-                        transition: "all 0.3s ease",
-                        "&:hover": {
-                          background: alpha(theme.palette.primary.main, 0.08),
-                          color: theme.palette.primary.main,
-                          transform: "translateY(-1px)",
-                        },
-                      }}
-                    >
-                      {day.substring(0, 3)}
-                    </Typography>
-                  </Grid>
-                ))}
-              </Grid>
-            )}
-
             {/* Modern Calendar Grid */}
             <Box
               ref={gridRef}
