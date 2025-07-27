@@ -319,7 +319,6 @@ function App() {
                 component="h1"
                 sx={{
                   fontWeight: "800",
-                  mb: { xs: 1, sm: 2 }, // Responsive margin
                   textShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
                   letterSpacing: "-0.5px",
                   background:
@@ -361,6 +360,7 @@ function App() {
                 />
                 Crypto Market Calendar
               </Typography>
+              
               <Typography
                 variant="h6"
                 sx={{
@@ -426,37 +426,6 @@ function App() {
               },
             }}
           >
-            {/* Info Button - Top Right Corner */}
-            <IconButton
-              onClick={handleInfoDialogOpen}
-              sx={{
-                position: "absolute",
-                top: { xs: 16, md: 24 },
-                right: { xs: 16, md: 24 },
-                zIndex: 1000,
-                backgroundColor: "rgba(25, 118, 210, 0.1)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(25, 118, 210, 0.2)",
-                color: "primary.main",
-                width: { xs: 44, md: 48 },
-                height: { xs: 44, md: 48 },
-                "&:hover": {
-                  backgroundColor: "rgba(25, 118, 210, 0.2)",
-                  transform: "scale(1.05)",
-                  boxShadow: "0 4px 20px rgba(25, 118, 210, 0.3)",
-                },
-                transition: "all 0.3s ease",
-                animation: "float 3s ease-in-out infinite",
-                "@keyframes float": {
-                  "0%": { transform: "translateY(0px)" },
-                  "50%": { transform: "translateY(-3px)" },
-                  "100%": { transform: "translateY(0px)" },
-                },
-              }}
-            >
-              <Info sx={{ fontSize: { xs: 20, md: 24 } }} />
-            </IconButton>
-
             <InteractiveCalendar
               initialSymbol={DEFAULT_SYMBOL}
               initialViewType={VIEW_TYPES.DAILY}
@@ -1055,6 +1024,72 @@ function App() {
               visualization
             </Typography>
           </Box>
+
+          {/* Floating Info Button - FAB Style */}
+          <IconButton
+            onClick={handleInfoDialogOpen}
+            sx={{
+              position: "fixed",
+              bottom: { xs: 24, md: 32 },
+              right: { xs: 24, md: 32 },
+              zIndex: 1000,
+              width: { xs: 56, md: 64 },
+              height: { xs: 56, md: 64 },
+              backgroundColor: "primary.main",
+              color: "white",
+              boxShadow: "0 8px 24px rgba(25, 118, 210, 0.4)",
+              "&:hover": {
+                backgroundColor: "primary.dark",
+                transform: "translateY(-4px) scale(1.05)",
+                boxShadow: "0 12px 32px rgba(25, 118, 210, 0.6)",
+              },
+              "&:active": {
+                transform: "translateY(-2px) scale(1.02)",
+              },
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              // Subtle bounce animation
+              animation: "fabFloat 4s ease-in-out infinite",
+              "@keyframes fabFloat": {
+                "0%, 100%": { transform: "translateY(0px)" },
+                "50%": { transform: "translateY(-4px)" },
+              },
+              // Pulse effect on hover
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                borderRadius: "50%",
+                background: "rgba(255, 255, 255, 0.2)",
+                transform: "scale(0)",
+                transition: "transform 0.3s ease",
+              },
+              "&:hover::before": {
+                transform: "scale(1)",
+              },
+              // Add a subtle glow
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                top: -4,
+                left: -4,
+                right: -4,
+                bottom: -4,
+                borderRadius: "50%",
+                background: "linear-gradient(45deg, rgba(25, 118, 210, 0.2), rgba(66, 165, 245, 0.2))",
+                opacity: 0,
+                zIndex: -1,
+                transition: "opacity 0.3s ease",
+              },
+              "&:hover::after": {
+                opacity: 1,
+              },
+            }}
+          >
+            <Info sx={{ fontSize: { xs: 28, md: 32 } }} />
+          </IconButton>
         </Box>
       </ThemeProvider>
     </ErrorBoundary>
