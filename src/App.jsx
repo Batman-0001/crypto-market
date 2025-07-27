@@ -19,7 +19,13 @@ import {
   Chip,
   Grid,
 } from "@mui/material";
-import { TrendingUp, CalendarToday, Analytics, Info, Close } from "@mui/icons-material";
+import {
+  TrendingUp,
+  CalendarToday,
+  Analytics,
+  Info,
+  Close,
+} from "@mui/icons-material";
 import InteractiveCalendar from "./components/InteractiveCalendar";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { DEFAULT_SYMBOL, VIEW_TYPES } from "./constants";
@@ -360,7 +366,7 @@ function App() {
                 />
                 Crypto Market Calendar
               </Typography>
-              
+
               <Typography
                 variant="h6"
                 sx={{
@@ -818,7 +824,7 @@ function App() {
                 <Close />
               </IconButton>
             </DialogTitle>
-            
+
             <DialogContent sx={{ p: 3 }}>
               <Typography
                 variant="body1"
@@ -829,9 +835,9 @@ function App() {
                   fontSize: "1.1rem",
                 }}
               >
-                Explore advanced cryptocurrency market analysis with our interactive
-                calendar dashboard featuring real-time data visualization and
-                comprehensive technical indicators.
+                Explore advanced cryptocurrency market analysis with our
+                interactive calendar dashboard featuring real-time data
+                visualization and comprehensive technical indicators.
               </Typography>
 
               <Grid container spacing={3}>
@@ -840,20 +846,37 @@ function App() {
                     sx={{
                       p: 2,
                       borderRadius: "12px",
-                      background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+                      background:
+                        "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
                       border: "1px solid rgba(25, 118, 210, 0.1)",
                     }}
                   >
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "primary.main" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: 700, mb: 2, color: "primary.main" }}
+                    >
                       📅 Interactive Calendar
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.5 }}>
-                      Navigate through dates with intuitive controls. Click any date to view detailed market data and analysis.
+                      Navigate through dates with intuitive controls. Click any
+                      date to view detailed market data and analysis.
                     </Typography>
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                      <Chip label="Date Selection" size="small" variant="outlined" />
-                      <Chip label="Range Picker" size="small" variant="outlined" />
-                      <Chip label="Keyboard Navigation" size="small" variant="outlined" />
+                      <Chip
+                        label="Date Selection"
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label="Range Picker"
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label="Keyboard Navigation"
+                        size="small"
+                        variant="outlined"
+                      />
                     </Box>
                   </Box>
                 </Grid>
@@ -863,20 +886,37 @@ function App() {
                     sx={{
                       p: 2,
                       borderRadius: "12px",
-                      background: "linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)",
+                      background:
+                        "linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)",
                       border: "1px solid rgba(255, 152, 0, 0.2)",
                     }}
                   >
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "#f57c00" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: 700, mb: 2, color: "#f57c00" }}
+                    >
                       🔥 Volatility Heatmap
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.5 }}>
-                      Visual representation of market volatility with color-coded intensity indicators.
+                      Visual representation of market volatility with
+                      color-coded intensity indicators.
                     </Typography>
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                      <Chip label="Color Coding" size="small" variant="outlined" />
-                      <Chip label="Intensity Scale" size="small" variant="outlined" />
-                      <Chip label="Real-time Updates" size="small" variant="outlined" />
+                      <Chip
+                        label="Color Coding"
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label="Intensity Scale"
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label="Real-time Updates"
+                        size="small"
+                        variant="outlined"
+                      />
                     </Box>
                   </Box>
                 </Grid>
@@ -886,20 +926,37 @@ function App() {
                     sx={{
                       p: 2,
                       borderRadius: "12px",
-                      background: "linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)",
+                      background:
+                        "linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)",
                       border: "1px solid rgba(76, 175, 80, 0.2)",
                     }}
                   >
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "#388e3c" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: 700, mb: 2, color: "#388e3c" }}
+                    >
                       💧 Liquidity Indicators
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.5 }}>
-                      Track market liquidity and trading volume patterns across different timeframes.
+                      Track market liquidity and trading volume patterns across
+                      different timeframes.
                     </Typography>
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                      <Chip label="Volume Analysis" size="small" variant="outlined" />
-                      <Chip label="Liquidity Metrics" size="small" variant="outlined" />
-                      <Chip label="Flow Patterns" size="small" variant="outlined" />
+                      <Chip
+                        label="Volume Analysis"
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label="Liquidity Metrics"
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label="Flow Patterns"
+                        size="small"
+                        variant="outlined"
+                      />
                     </Box>
                   </Box>
                 </Grid>
@@ -909,20 +966,37 @@ function App() {
                     sx={{
                       p: 2,
                       borderRadius: "12px",
-                      background: "linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)",
+                      background:
+                        "linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)",
                       border: "1px solid rgba(156, 39, 176, 0.2)",
                     }}
                   >
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "#7b1fa2" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: 700, mb: 2, color: "#7b1fa2" }}
+                    >
                       📊 Performance Metrics
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.5 }}>
-                      Comprehensive performance analysis with advanced technical indicators and trend analysis.
+                      Comprehensive performance analysis with advanced technical
+                      indicators and trend analysis.
                     </Typography>
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                      <Chip label="Technical Analysis" size="small" variant="outlined" />
-                      <Chip label="Trend Indicators" size="small" variant="outlined" />
-                      <Chip label="Performance Stats" size="small" variant="outlined" />
+                      <Chip
+                        label="Technical Analysis"
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label="Trend Indicators"
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label="Performance Stats"
+                        size="small"
+                        variant="outlined"
+                      />
                     </Box>
                   </Box>
                 </Grid>
@@ -933,18 +1007,26 @@ function App() {
                   mt: 3,
                   p: 2,
                   borderRadius: "12px",
-                  background: "linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)",
+                  background:
+                    "linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)",
                   border: "1px solid rgba(33, 150, 243, 0.2)",
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: "primary.main" }}>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 700, mb: 1, color: "primary.main" }}
+                >
                   🚀 Getting Started
                 </Typography>
                 <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
-                  1. Select a cryptocurrency symbol from the dropdown menu<br />
-                  2. Choose your preferred view (Daily, Weekly, Monthly)<br />
-                  3. Click on any date to view detailed analysis<br />
-                  4. Use date range selection for comparative analysis<br />
+                  1. Select a cryptocurrency symbol from the dropdown menu
+                  <br />
+                  2. Choose your preferred view (Daily, Weekly, Monthly)
+                  <br />
+                  3. Click on any date to view detailed analysis
+                  <br />
+                  4. Use date range selection for comparative analysis
+                  <br />
                   5. Explore the scientific dashboard for advanced insights
                 </Typography>
               </Box>
@@ -955,14 +1037,16 @@ function App() {
                 onClick={handleInfoDialogClose}
                 variant="contained"
                 sx={{
-                  background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)",
+                  background:
+                    "linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)",
                   color: "white",
                   fontWeight: 600,
                   px: 4,
                   py: 1,
                   borderRadius: "8px",
                   "&:hover": {
-                    background: "linear-gradient(135deg, #1565c0 0%, #1976d2 100%)",
+                    background:
+                      "linear-gradient(135deg, #1565c0 0%, #1976d2 100%)",
                     transform: "translateY(-1px)",
                     boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
                   },
@@ -1078,7 +1162,8 @@ function App() {
                 right: -4,
                 bottom: -4,
                 borderRadius: "50%",
-                background: "linear-gradient(45deg, rgba(25, 118, 210, 0.2), rgba(66, 165, 245, 0.2))",
+                background:
+                  "linear-gradient(45deg, rgba(25, 118, 210, 0.2), rgba(66, 165, 245, 0.2))",
                 opacity: 0,
                 zIndex: -1,
                 transition: "opacity 0.3s ease",
