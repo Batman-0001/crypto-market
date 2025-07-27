@@ -10,10 +10,17 @@ import {
   Snackbar,
   Alert,
   useMediaQuery,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Chip,
+  Grid,
 } from "@mui/material";
-import { TrendingUp, CalendarToday, Analytics } from "@mui/icons-material";
+import { TrendingUp, CalendarToday, Analytics, Info, Close } from "@mui/icons-material";
 import InteractiveCalendar from "./components/InteractiveCalendar";
-import DashboardFeaturesGuide from "./components/DashboardFeaturesGuide";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { DEFAULT_SYMBOL, VIEW_TYPES } from "./constants";
 
@@ -118,6 +125,7 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
   const [selectedDateRange, setSelectedDateRange] = useState(null);
+  const [infoDialogOpen, setInfoDialogOpen] = useState(false);
   const [notification, setNotification] = useState({
     open: false,
     message: "",
@@ -192,6 +200,15 @@ function App() {
   // Handle notification close
   const handleNotificationClose = () => {
     setNotification({ ...notification, open: false });
+  };
+
+  // Handle info dialog
+  const handleInfoDialogOpen = () => {
+    setInfoDialogOpen(true);
+  };
+
+  const handleInfoDialogClose = () => {
+    setInfoDialogOpen(false);
   };
 
   return (
@@ -409,8 +426,36 @@ function App() {
               },
             }}
           >
-            {/* Dashboard Features Guide */}
-            <DashboardFeaturesGuide />
+            {/* Info Button - Top Right Corner */}
+            <IconButton
+              onClick={handleInfoDialogOpen}
+              sx={{
+                position: "absolute",
+                top: { xs: 16, md: 24 },
+                right: { xs: 16, md: 24 },
+                zIndex: 1000,
+                backgroundColor: "rgba(25, 118, 210, 0.1)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(25, 118, 210, 0.2)",
+                color: "primary.main",
+                width: { xs: 44, md: 48 },
+                height: { xs: 44, md: 48 },
+                "&:hover": {
+                  backgroundColor: "rgba(25, 118, 210, 0.2)",
+                  transform: "scale(1.05)",
+                  boxShadow: "0 4px 20px rgba(25, 118, 210, 0.3)",
+                },
+                transition: "all 0.3s ease",
+                animation: "float 3s ease-in-out infinite",
+                "@keyframes float": {
+                  "0%": { transform: "translateY(0px)" },
+                  "50%": { transform: "translateY(-3px)" },
+                  "100%": { transform: "translateY(0px)" },
+                },
+              }}
+            >
+              <Info sx={{ fontSize: { xs: 20, md: 24 } }} />
+            </IconButton>
 
             <InteractiveCalendar
               initialSymbol={DEFAULT_SYMBOL}
@@ -762,6 +807,203 @@ function App() {
               {notification.message}
             </Alert>
           </Snackbar>
+
+          {/* Info Dialog */}
+          <Dialog
+            open={infoDialogOpen}
+            onClose={handleInfoDialogClose}
+            maxWidth="md"
+            fullWidth
+            PaperProps={{
+              sx: {
+                borderRadius: "16px",
+                background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+                backdropFilter: "blur(20px)",
+                border: "1px solid rgba(25, 118, 210, 0.1)",
+                boxShadow: "0 20px 60px rgba(0, 0, 0, 0.1)",
+              },
+            }}
+          >
+            <DialogTitle
+              sx={{
+                background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                fontWeight: 700,
+                fontSize: "1.3rem",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <TrendingUp sx={{ mr: 1, fontSize: 28 }} />
+                Dashboard Features Guide
+              </Box>
+              <IconButton
+                onClick={handleInfoDialogClose}
+                sx={{
+                  color: "white",
+                  "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
+                }}
+              >
+                <Close />
+              </IconButton>
+            </DialogTitle>
+            
+            <DialogContent sx={{ p: 3 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  mb: 3,
+                  lineHeight: 1.6,
+                  color: "text.secondary",
+                  fontSize: "1.1rem",
+                }}
+              >
+                Explore advanced cryptocurrency market analysis with our interactive
+                calendar dashboard featuring real-time data visualization and
+                comprehensive technical indicators.
+              </Typography>
+
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: "12px",
+                      background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+                      border: "1px solid rgba(25, 118, 210, 0.1)",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "primary.main" }}>
+                      📅 Interactive Calendar
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.5 }}>
+                      Navigate through dates with intuitive controls. Click any date to view detailed market data and analysis.
+                    </Typography>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                      <Chip label="Date Selection" size="small" variant="outlined" />
+                      <Chip label="Range Picker" size="small" variant="outlined" />
+                      <Chip label="Keyboard Navigation" size="small" variant="outlined" />
+                    </Box>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: "12px",
+                      background: "linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)",
+                      border: "1px solid rgba(255, 152, 0, 0.2)",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "#f57c00" }}>
+                      🔥 Volatility Heatmap
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.5 }}>
+                      Visual representation of market volatility with color-coded intensity indicators.
+                    </Typography>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                      <Chip label="Color Coding" size="small" variant="outlined" />
+                      <Chip label="Intensity Scale" size="small" variant="outlined" />
+                      <Chip label="Real-time Updates" size="small" variant="outlined" />
+                    </Box>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: "12px",
+                      background: "linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)",
+                      border: "1px solid rgba(76, 175, 80, 0.2)",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "#388e3c" }}>
+                      💧 Liquidity Indicators
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.5 }}>
+                      Track market liquidity and trading volume patterns across different timeframes.
+                    </Typography>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                      <Chip label="Volume Analysis" size="small" variant="outlined" />
+                      <Chip label="Liquidity Metrics" size="small" variant="outlined" />
+                      <Chip label="Flow Patterns" size="small" variant="outlined" />
+                    </Box>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: "12px",
+                      background: "linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)",
+                      border: "1px solid rgba(156, 39, 176, 0.2)",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "#7b1fa2" }}>
+                      📊 Performance Metrics
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.5 }}>
+                      Comprehensive performance analysis with advanced technical indicators and trend analysis.
+                    </Typography>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                      <Chip label="Technical Analysis" size="small" variant="outlined" />
+                      <Chip label="Trend Indicators" size="small" variant="outlined" />
+                      <Chip label="Performance Stats" size="small" variant="outlined" />
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
+
+              <Box
+                sx={{
+                  mt: 3,
+                  p: 2,
+                  borderRadius: "12px",
+                  background: "linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)",
+                  border: "1px solid rgba(33, 150, 243, 0.2)",
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: "primary.main" }}>
+                  🚀 Getting Started
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
+                  1. Select a cryptocurrency symbol from the dropdown menu<br />
+                  2. Choose your preferred view (Daily, Weekly, Monthly)<br />
+                  3. Click on any date to view detailed analysis<br />
+                  4. Use date range selection for comparative analysis<br />
+                  5. Explore the scientific dashboard for advanced insights
+                </Typography>
+              </Box>
+            </DialogContent>
+
+            <DialogActions sx={{ p: 3, pt: 0 }}>
+              <Button
+                onClick={handleInfoDialogClose}
+                variant="contained"
+                sx={{
+                  background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)",
+                  color: "white",
+                  fontWeight: 600,
+                  px: 4,
+                  py: 1,
+                  borderRadius: "8px",
+                  "&:hover": {
+                    background: "linear-gradient(135deg, #1565c0 0%, #1976d2 100%)",
+                    transform: "translateY(-1px)",
+                    boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
+                  },
+                  transition: "all 0.3s ease",
+                }}
+              >
+                Got it!
+              </Button>
+            </DialogActions>
+          </Dialog>
 
           {/* Footer */}
           <Box

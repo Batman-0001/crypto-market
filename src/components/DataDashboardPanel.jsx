@@ -138,7 +138,7 @@ const DataDashboardPanel = ({
   const [activeTab, setActiveTab] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Enhanced color palette with scientific theme
+  // Enhanced Dark Theme Color Palette - High Contrast
   const colors = {
     success: "#00ff88",
     error: "#ff4757",
@@ -154,20 +154,29 @@ const DataDashboardPanel = ({
     neon: "#39ff14",
     electric: "#00ffff",
     plasma: "#ff00ff",
+    // High contrast text colors for dark theme
+    text: {
+      primary: "#ffffff", // Pure white for maximum contrast
+      secondary: "#f0f0f0", // Very light gray for secondary text
+      tertiary: "#d0d0d0", // Light gray for tertiary text
+      accent: "#b0b0b0", // Medium gray for accent text
+      bright: "#ffffff", // Pure white for important text
+      muted: "#999999", // Muted gray for subtle text
+    },
     background: {
       primary: `linear-gradient(135deg, 
-        ${alpha("#0a0e27", 0.98)} 0%, 
-        ${alpha("#1a1a2e", 0.95)} 50%,
-        ${alpha("#16213e", 0.98)} 100%)`,
+        ${alpha("#000000", 0.98)} 0%, 
+        ${alpha("#0a0a0a", 0.95)} 50%,
+        ${alpha("#111111", 0.98)} 100%)`,
       accent: `linear-gradient(135deg, 
-        ${alpha("#0f3460", 0.15)} 0%, 
-        ${alpha("#16537e", 0.08)} 100%)`,
+        ${alpha("#1a1a1a", 0.15)} 0%, 
+        ${alpha("#222222", 0.08)} 100%)`,
       card: `linear-gradient(135deg,
-        ${alpha("#1e1e2e", 0.9)} 0%,
-        ${alpha("#2d2d44", 0.8)} 100%)`,
+        ${alpha("#1a1a1a", 0.9)} 0%,
+        ${alpha("#222222", 0.8)} 100%)`,
       glass: `linear-gradient(135deg,
-        ${alpha("#ffffff", 0.02)} 0%,
-        ${alpha("#ffffff", 0.01)} 100%)`,
+        ${alpha("#ffffff", 0.05)} 0%,
+        ${alpha("#ffffff", 0.02)} 100%)`,
     },
   };
 
@@ -491,12 +500,13 @@ const DataDashboardPanel = ({
             <Typography
               variant="subtitle2"
               sx={{
-                color: alpha("#e2e8f0", 0.9),
+                color: colors.text.primary,
                 fontWeight: 700,
-                fontSize: "0.8rem",
+                fontSize: "0.85rem",
                 textTransform: "uppercase",
                 letterSpacing: "1px",
                 fontFamily: "monospace",
+                textShadow: `0 0 10px ${alpha(colors.text.primary, 0.3)}`,
               }}
             >
               {safeTitle}
@@ -555,8 +565,8 @@ const DataDashboardPanel = ({
             <Typography
               variant="body2"
               sx={{
-                color: alpha("#e2e8f0", 0.7),
-                fontSize: "0.85rem",
+                color: colors.text.secondary,
+                fontSize: "0.9rem",
                 mb: 2,
                 fontStyle: "italic",
                 position: "relative",
@@ -621,7 +631,7 @@ const DataDashboardPanel = ({
               >
                 <Typography
                   variant="caption"
-                  sx={{ color: alpha("#e2e8f0", 0.6), fontSize: "0.7rem" }}
+                  sx={{ color: colors.text.tertiary, fontSize: "0.75rem" }}
                 >
                   Progress
                 </Typography>
@@ -707,7 +717,7 @@ const DataDashboardPanel = ({
           }}
         >
           <CardContent sx={{ p: 3, textAlign: "center" }}>
-            <Typography variant="body2" sx={{ color: alpha("#e2e8f0", 0.6) }}>
+            <Typography variant="body2" sx={{ color: colors.text.secondary }}>
               ⚠️ No data available for {title}
             </Typography>
           </CardContent>
@@ -740,7 +750,7 @@ const DataDashboardPanel = ({
                 variant="h6"
                 sx={{
                   fontWeight: 700,
-                  color: "#e2e8f0",
+                  color: colors.text.primary,
                   fontSize: "1rem",
                 }}
               >
@@ -758,16 +768,16 @@ const DataDashboardPanel = ({
                     />
                     <XAxis
                       dataKey="date"
-                      stroke={alpha("#e2e8f0", 0.6)}
+                      stroke={colors.text.tertiary}
                       fontSize={10}
                     />
-                    <YAxis stroke={alpha("#e2e8f0", 0.6)} fontSize={10} />
+                    <YAxis stroke={colors.text.tertiary} fontSize={10} />
                     <RechartsTooltip
                       contentStyle={{
                         backgroundColor: colors.background.card,
                         border: `1px solid ${alpha(chartColor, 0.3)}`,
                         borderRadius: "8px",
-                        color: "#e2e8f0",
+                        color: colors.text.primary,
                       }}
                     />
                     <Line
@@ -795,16 +805,16 @@ const DataDashboardPanel = ({
                     />
                     <XAxis
                       dataKey="date"
-                      stroke={alpha("#e2e8f0", 0.6)}
+                      stroke={colors.text.tertiary}
                       fontSize={10}
                     />
-                    <YAxis stroke={alpha("#e2e8f0", 0.6)} fontSize={10} />
+                    <YAxis stroke={colors.text.tertiary} fontSize={10} />
                     <RechartsTooltip
                       contentStyle={{
                         backgroundColor: colors.background.card,
                         border: `1px solid ${alpha(chartColor, 0.3)}`,
                         borderRadius: "8px",
-                        color: "#e2e8f0",
+                        color: colors.text.primary,
                       }}
                     />
                     <Area
@@ -845,16 +855,16 @@ const DataDashboardPanel = ({
                     />
                     <XAxis
                       dataKey="date"
-                      stroke={alpha("#e2e8f0", 0.6)}
+                      stroke={colors.text.tertiary}
                       fontSize={10}
                     />
-                    <YAxis stroke={alpha("#e2e8f0", 0.6)} fontSize={10} />
+                    <YAxis stroke={colors.text.tertiary} fontSize={10} />
                     <RechartsTooltip
                       contentStyle={{
                         backgroundColor: colors.background.card,
                         border: `1px solid ${alpha(chartColor, 0.3)}`,
                         borderRadius: "8px",
-                        color: "#e2e8f0",
+                        color: colors.text.primary,
                       }}
                     />
                     <Bar
@@ -895,7 +905,10 @@ const DataDashboardPanel = ({
     <Box sx={{ p: 3, background: colors.background.primary }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
         <Science sx={{ color: colors.cyan, fontSize: 28, mr: 2 }} />
-        <Typography variant="h5" sx={{ fontWeight: 800, color: "#e2e8f0" }}>
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 800, color: colors.text.primary }}
+        >
           🧬 Quantum Price Analysis
         </Typography>
       </Box>
@@ -1064,7 +1077,10 @@ const DataDashboardPanel = ({
     <Box sx={{ p: 3, background: colors.background.primary }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
         <Whatshot sx={{ color: colors.error, fontSize: 28, mr: 2 }} />
-        <Typography variant="h5" sx={{ fontWeight: 800, color: "#e2e8f0" }}>
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 800, color: colors.text.primary }}
+        >
           ⚡ Volatility Quantum Field Analysis
         </Typography>
       </Box>
@@ -1211,7 +1227,7 @@ const DataDashboardPanel = ({
               <Typography
                 variant="body1"
                 sx={{
-                  color: alpha("#e2e8f0", 0.8),
+                  color: colors.text.primary,
                   mb: 3,
                   lineHeight: 1.6,
                   fontStyle: "italic",
@@ -1283,7 +1299,7 @@ const DataDashboardPanel = ({
                 </Typography>
                 <Typography
                   variant="caption"
-                  sx={{ color: alpha("#e2e8f0", 0.7) }}
+                  sx={{ color: colors.text.secondary }}
                 >
                   Neural network prediction accuracy based on 10,000+ historical
                   patterns and quantum field analysis
@@ -1300,7 +1316,10 @@ const DataDashboardPanel = ({
     <Box sx={{ p: 3, background: colors.background.primary }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
         <Psychology sx={{ color: colors.purple, fontSize: 28, mr: 2 }} />
-        <Typography variant="h5" sx={{ fontWeight: 800, color: "#e2e8f0" }}>
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 800, color: colors.text.primary }}
+        >
           🧠 Neural Technical Analysis Matrix
         </Typography>
       </Box>
@@ -1582,7 +1601,7 @@ const DataDashboardPanel = ({
                 <Typography
                   variant="body2"
                   sx={{
-                    color: alpha("#e2e8f0", 0.8),
+                    color: colors.text.primary,
                     position: "relative",
                     lineHeight: 1.6,
                   }}
