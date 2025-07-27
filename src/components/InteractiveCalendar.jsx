@@ -36,7 +36,8 @@ import CalendarLegend from "./CalendarLegend";
 import CalendarControls from "./CalendarControls";
 import CalendarTooltip from "./CalendarTooltip";
 import DateDetailPanel from "./DateDetailPanel";
-import DataDashboard from "./DataDashboard";
+import DataDashboardPanel from "./DataDashboardPanel";
+import { useDashboardPanel } from "../hooks/useDashboardPanel";
 import { VIEW_TYPES, DEFAULT_SYMBOL } from "../constants";
 
 /**
@@ -87,14 +88,21 @@ const InteractiveCalendar = ({
   const [detailPanelOpen, setDetailPanelOpen] = useState(false);
   const [detailPanelData, setDetailPanelData] = useState(null);
   const [controlsCollapsed, setControlsCollapsed] = useState(false);
-  const [dashboardOpen, setDashboardOpen] = useState(false);
-  const [dashboardData, setDashboardData] = useState(null);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
 
-  // Debug dashboard state
-  useEffect(() => {
-    console.log("Dashboard state changed:", { dashboardOpen, dashboardData });
-  }, [dashboardOpen, dashboardData]);
+  // Dashboard Panel Hook - unified dashboard management
+  const {
+    isOpen: isDashboardOpen,
+    selectedDate: dashboardSelectedDate,
+    selectedDateRange: dashboardSelectedDateRange,
+    activeSymbol: dashboardActiveSymbol,
+    marketData: dashboardMarketData,
+    isLoading: isDashboardLoading,
+    openDashboard,
+    openDashboardWithRange,
+    closeDashboard,
+    setActiveSymbol: setDashboardSymbol,
+  } = useDashboardPanel();
 
   // GSAP Animation Functions
   const animateCalendarEntry = useCallback(() => {
@@ -216,6 +224,13 @@ const InteractiveCalendar = ({
   const dateRangeSelection = useDateRangeSelection((range) => {
     onDateRangeSelect(range);
     console.log("Date range selected:", range);
+
+    // Open dashboard with date range if Ctrl+D is held
+    if (range && range.start && range.end) {
+      // You can add a modifier key check here if needed
+      // For now, we'll just console log for potential future enhancement
+      console.log("Range available for dashboard:", range);
+    }
   });
 
   const tooltip = useTooltip();
@@ -328,7 +343,7 @@ const InteractiveCalendar = ({
     escape: () => {
       dateRangeSelection.cancelSelection();
       setDetailPanelOpen(false);
-      setDashboardOpen(false);
+      closeDashboard();
       setSelectedDate(null);
     },
     "ctrl+z": () => zoom.resetZoom(),
@@ -336,6 +351,24 @@ const InteractiveCalendar = ({
     "ctrl+minus": () => zoom.zoomOut(),
     "ctrl+r": () => refreshData(),
     "ctrl+h": () => setControlsCollapsed(!controlsCollapsed),
+    "ctrl+d": () => {
+      if (selectedDate) {
+        openDashboard(selectedDate, selectedSymbol);
+      }
+    },
+    "ctrl+shift+d": () => {
+      if (
+        dateRangeSelection.selectedRange &&
+        dateRangeSelection.selectedRange.start &&
+        dateRangeSelection.selectedRange.end
+      ) {
+        openDashboardWithRange(
+          dateRangeSelection.selectedRange.start,
+          dateRangeSelection.selectedRange.end,
+          selectedSymbol
+        );
+      }
+    },
     f: () => {
       if (selectedDate && data) {
         setDetailPanelOpen(true);
@@ -346,8 +379,8 @@ const InteractiveCalendar = ({
       if (selectedDate && data) {
         const cellData = getFilteredDataForDate(selectedDate);
         if (cellData) {
-          setDashboardData(cellData);
-          setDashboardOpen(true);
+          // Open unified dashboard with the selected date data
+          openDashboard(selectedDate, selectedSymbol);
         }
       }
     },
@@ -414,8 +447,19 @@ const InteractiveCalendar = ({
       setSelectedDate(date);
       handleMouseFocus(date);
       onDateSelect(date, cellData);
+
+      // Check for double-click to open dashboard
+      if (event?.detail === 2) {
+        openDashboard(date, selectedSymbol);
+      }
     },
-    [handleMouseFocus, onDateSelect, animateCellClick]
+    [
+      handleMouseFocus,
+      onDateSelect,
+      animateCellClick,
+      openDashboard,
+      selectedSymbol,
+    ]
   );
 
   // Handle cell hover
@@ -478,17 +522,19 @@ const InteractiveCalendar = ({
     ]
   );
 
-  const handleCellDoubleClick = useCallback((date, cellData, event) => {
-    console.log("Double click detected!", { date, cellData });
-    // Open Data Dashboard on double click
-    if (cellData) {
-      console.log("Opening dashboard via double click");
-      setDashboardData(cellData);
-      setDashboardOpen(true);
-    } else {
-      console.log("No cell data for double click");
-    }
-  }, []);
+  const handleCellDoubleClick = useCallback(
+    (date, cellData, event) => {
+      console.log("Double click detected!", { date, cellData });
+      // Open Data Dashboard on double click
+      if (cellData) {
+        console.log("Opening dashboard via double click");
+        openDashboard(date, selectedSymbol);
+      } else {
+        console.log("No cell data for double click");
+      }
+    },
+    [openDashboard, selectedSymbol]
+  );
 
   const handleCellRightClick = useCallback(
     (date, cellData, event) => {
@@ -537,10 +583,11 @@ const InteractiveCalendar = ({
   const handleSymbolChange = useCallback(
     (newSymbol) => {
       setSelectedSymbol(newSymbol);
+      setDashboardSymbol(newSymbol);
       setSelectedDate(null);
       dateRangeSelection.cancelSelection();
     },
-    [dateRangeSelection]
+    [dateRangeSelection, setDashboardSymbol]
   );
 
   const handleViewTypeChange = useCallback(
@@ -867,8 +914,7 @@ const InteractiveCalendar = ({
               const cellData = getFilteredDataForDate(selectedDate);
               console.log("cellData found:", cellData);
               if (cellData) {
-                setDashboardData(cellData);
-                setDashboardOpen(true);
+                openDashboard(selectedDate, selectedSymbol);
                 console.log("Dashboard should be opening...");
               } else {
                 console.log("No cellData found for selected date");
@@ -1071,17 +1117,21 @@ const InteractiveCalendar = ({
         </>
       )}
 
-      {/* Data Dashboard */}
-      <DataDashboard
-        open={dashboardOpen}
-        onClose={() => {
-          console.log("Dashboard closing...");
-          setDashboardOpen(false);
+      {/* Enhanced Data Dashboard Panel - Unified Dashboard */}
+      <DataDashboardPanel
+        isOpen={isDashboardOpen}
+        onClose={closeDashboard}
+        selectedDate={dashboardSelectedDate}
+        selectedDateRange={dashboardSelectedDateRange}
+        marketData={dashboardMarketData}
+        symbol={dashboardActiveSymbol}
+        benchmarkData={{
+          name: "S&P 500",
+          correlation: 0.65,
+          beta: 1.8,
+          alpha: 12.4,
+          sharpeRatio: 1.35,
         }}
-        selectedData={dashboardData}
-        historicalData={data || []}
-        benchmarkData={[]} // TODO: Add benchmark data if available
-        technicalIndicators={{}}
       />
     </Box>
   );

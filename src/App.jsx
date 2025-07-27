@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { TrendingUp, CalendarToday, Analytics } from "@mui/icons-material";
 import InteractiveCalendar from "./components/InteractiveCalendar";
+import DashboardFeaturesGuide from "./components/DashboardFeaturesGuide";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { DEFAULT_SYMBOL, VIEW_TYPES } from "./constants";
 
@@ -408,6 +409,9 @@ function App() {
               },
             }}
           >
+            {/* Dashboard Features Guide */}
+            <DashboardFeaturesGuide />
+
             <InteractiveCalendar
               initialSymbol={DEFAULT_SYMBOL}
               initialViewType={VIEW_TYPES.DAILY}
