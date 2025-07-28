@@ -19,6 +19,8 @@ import {
   CardContent,
   Slider,
   Chip,
+  Badge,
+  Divider,
 } from "@mui/material";
 import {
   ZoomIn,
@@ -34,6 +36,10 @@ import {
   Whatshot,
   Speed,
   BarChart as BarChartIcon,
+  Compare,
+  Timeline,
+  Pattern,
+  Analytics,
 } from "@mui/icons-material";
 import {
   RiCurrencyLine,
@@ -42,6 +48,10 @@ import {
   RiThermometerLine,
   RiBarChartLine,
 } from "react-icons/ri";
+
+// Import new feature utilities
+import { getPatternIcon, getPatternColor } from "../utils/patternRecognition";
+import { formatComparisonValue } from "../utils/comparisonUtils";
 
 /**
  * Simple Calendar Controls without GSAP animations
@@ -82,6 +92,13 @@ const CalendarControls = ({
   // Layout props
   isCollapsed = false,
   onToggleCollapse = () => {},
+
+  // New feature props
+  patternAnalysis = null,
+  comparisonData = null,
+  onComparisonRequest = () => {},
+  alertCount = 0,
+  onShowAlerts = () => {},
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -110,6 +127,17 @@ const CalendarControls = ({
       glass: "rgba(255, 255, 255, 0.1)",
       backdrop: "rgba(255, 255, 255, 0.05)",
       border: "rgba(255, 255, 255, 0.2)",
+    },
+    card: {
+      background: "rgba(255, 255, 255, 0.1)",
+      border: "1px solid rgba(255, 255, 255, 0.2)",
+    },
+    text: {
+      primary: "#1e293b",
+      secondary: "#64748b",
+    },
+    accent: {
+      main: "#6366f1",
     },
   };
 
@@ -1023,6 +1051,238 @@ const CalendarControls = ({
               {isLoading ? "Syncing..." : "Refresh Data"}
             </Button>
           </Box>
+
+          {/* Pattern Analysis Card */}
+          <Card
+            elevation={0}
+            sx={{
+              background: colors.card.background,
+              border: colors.card.border,
+              borderRadius: "16px",
+              mb: 2,
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 700,
+                  mb: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  color: colors.text.primary,
+                }}
+              >
+                <Timeline sx={{ color: colors.accent.main }} />
+                Pattern Analysis
+                {patternAnalysis && (
+                  <Chip
+                    label={patternAnalysis.totalPatterns}
+                    size="small"
+                    sx={{
+                      ml: 1,
+                      backgroundColor: colors.accent.main,
+                      color: "white",
+                      fontWeight: 600,
+                    }}
+                  />
+                )}
+              </Typography>
+
+              {patternAnalysis &&
+              patternAnalysis.patterns &&
+              patternAnalysis.patterns.length > 0 ? (
+                <Box>
+                  <Box
+                    sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}
+                  >
+                    {patternAnalysis.patterns
+                      .slice(0, 3)
+                      .map((pattern, index) => {
+                        // Safety check for pattern object
+                        if (!pattern || !pattern.type) return null;
+
+                        return (
+                          <Chip
+                            key={index}
+                            label={`${getPatternIcon(pattern)} ${pattern.type}`}
+                            size="small"
+                            sx={{
+                              backgroundColor: alpha(
+                                getPatternColor(pattern),
+                                0.1
+                              ),
+                              color: getPatternColor(pattern),
+                              border: `1px solid ${alpha(
+                                getPatternColor(pattern),
+                                0.3
+                              )}`,
+                            }}
+                          />
+                        );
+                      })}
+                    {patternAnalysis.patterns.length > 3 && (
+                      <Chip
+                        label={`+${patternAnalysis.patterns.length - 3} more`}
+                        size="small"
+                        sx={{
+                          backgroundColor: alpha(colors.text.secondary, 0.1),
+                          color: colors.text.secondary,
+                        }}
+                      />
+                    )}
+                  </Box>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 2 }}
+                  >
+                    {Object.entries(patternAnalysis.summary)
+                      .filter(([_, count]) => count > 0)
+                      .map(([type, count]) => `${count} ${type}`)
+                      .join(", ")}
+                  </Typography>
+
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<Analytics />}
+                    onClick={() => onComparisonRequest("patterns")}
+                    sx={{
+                      borderColor: colors.accent.main,
+                      color: colors.accent.main,
+                      "&:hover": {
+                        backgroundColor: alpha(colors.accent.main, 0.1),
+                        borderColor: colors.accent.main,
+                      },
+                    }}
+                  >
+                    View Details
+                  </Button>
+                </Box>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Analyzing patterns... Please wait for data to load.
+                </Typography>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Comparison Tools Card */}
+          <Card
+            elevation={0}
+            sx={{
+              background: colors.card.background,
+              border: colors.card.border,
+              borderRadius: "16px",
+              mb: 2,
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 700,
+                  mb: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  color: colors.text.primary,
+                }}
+              >
+                <Compare sx={{ color: colors.accent.main }} />
+                Comparison Tools
+                {alertCount > 0 && (
+                  <Badge badgeContent={alertCount} color="error" sx={{ ml: 1 }}>
+                    <IconButton
+                      size="small"
+                      onClick={onShowAlerts}
+                      sx={{
+                        backgroundColor: alpha(colors.error.main, 0.1),
+                        color: colors.error.main,
+                        "&:hover": {
+                          backgroundColor: alpha(colors.error.main, 0.2),
+                        },
+                      }}
+                    >
+                      <Whatshot />
+                    </IconButton>
+                  </Badge>
+                )}
+              </Typography>
+
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<DateRange />}
+                  onClick={() => onComparisonRequest("timePeriod")}
+                  sx={{
+                    borderColor: colors.primary.main,
+                    color: colors.primary.main,
+                    justifyContent: "flex-start",
+                    "&:hover": {
+                      backgroundColor: alpha(colors.primary.main, 0.1),
+                      borderColor: colors.primary.main,
+                    },
+                  }}
+                >
+                  Compare Time Periods
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<ShowChart />}
+                  onClick={() => onComparisonRequest("cryptocurrencies")}
+                  sx={{
+                    borderColor: colors.secondary.main,
+                    color: colors.secondary.main,
+                    justifyContent: "flex-start",
+                    "&:hover": {
+                      backgroundColor: alpha(colors.secondary.main, 0.1),
+                      borderColor: colors.secondary.main,
+                    },
+                  }}
+                >
+                  Compare Cryptocurrencies
+                </Button>
+
+                {comparisonData && (
+                  <Box
+                    sx={{
+                      mt: 1,
+                      p: 2,
+                      backgroundColor: alpha(colors.accent.main, 0.05),
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mb: 1 }}
+                    >
+                      Last Comparison:
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {comparisonData.symbol || "Multiple Assets"}
+                    </Typography>
+                    {comparisonData.differences && (
+                      <Typography variant="caption" color="text.secondary">
+                        Return Diff:{" "}
+                        {formatComparisonValue(
+                          comparisonData.differences.returnDifference,
+                          "percent"
+                        )}
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
         </Box>
       )}
     </Paper>

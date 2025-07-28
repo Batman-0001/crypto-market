@@ -40,6 +40,17 @@ import DataDashboardPanel from "./DataDashboardPanel";
 import { useDashboardPanel } from "../hooks/useDashboardPanel";
 import { VIEW_TYPES, DEFAULT_SYMBOL } from "../constants";
 
+// Import new feature systems
+import { getTheme } from "../utils/colorThemes";
+import { alertManager } from "../utils/alertSystem";
+import { analyzePatterns } from "../utils/patternRecognition";
+import {
+  compareTimePeriods,
+  compareCryptocurrencies,
+} from "../utils/comparisonUtils";
+import { animationManager, useAnimation } from "../utils/animations";
+import { cryptoAPI } from "../services/cryptoAPI";
+
 /**
  * Interactive Calendar component with cryptocurrency market data visualization
  * Enhanced with advanced interactive features
@@ -53,6 +64,7 @@ const InteractiveCalendar = ({
   onDateSelect = () => {},
   onDataUpdate = () => {},
   onDateRangeSelect = () => {},
+  onSymbolChange = () => {},
   showLegend = true,
   showTooltips = true,
   showControls = true,
@@ -89,6 +101,15 @@ const InteractiveCalendar = ({
   const [detailPanelData, setDetailPanelData] = useState(null);
   const [controlsCollapsed, setControlsCollapsed] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
+
+  // New feature states
+  const [currentTheme, setCurrentTheme] = useState(getTheme("default"));
+  const [patternAnalysis, setPatternAnalysis] = useState(null);
+  const [comparisonData, setComparisonData] = useState(null);
+  const [realTimeData, setRealTimeData] = useState(new Map());
+
+  // Animation hook
+  const { animate, stagger } = useAnimation();
 
   // Dashboard Panel Hook - unified dashboard management
   const {
@@ -586,8 +607,9 @@ const InteractiveCalendar = ({
       setDashboardSymbol(newSymbol);
       setSelectedDate(null);
       dateRangeSelection.cancelSelection();
+      onSymbolChange(newSymbol);
     },
-    [dateRangeSelection, setDashboardSymbol]
+    [dateRangeSelection, setDashboardSymbol, onSymbolChange]
   );
 
   const handleViewTypeChange = useCallback(
@@ -634,6 +656,47 @@ const InteractiveCalendar = ({
       onDataUpdate(data, dataRanges);
     }
   }, [data, dataRanges, onDataUpdate]);
+
+  // Pattern recognition and analysis
+  useEffect(() => {
+    if (data && data.length > 10 && selectedSymbol) {
+      const analysis = analyzePatterns(data, selectedSymbol, {
+        detectTrends: true,
+        detectSupportResistance: true,
+        detectVolatilityClusters: true,
+        detectVolumeSpikes: true,
+        detectAnomalies: true,
+        lookbackDays: 30,
+      });
+      setPatternAnalysis(analysis);
+    }
+  }, [data, selectedSymbol]);
+
+  // Alert monitoring
+  useEffect(() => {
+    if (data && data.length > 0) {
+      data.forEach((dataPoint, index) => {
+        if (index === data.length - 1) {
+          // Only check latest data point
+          alertManager.checkAlerts(dataPoint, selectedSymbol, dataPoint.date);
+        }
+      });
+    }
+  }, [data, selectedSymbol]);
+
+  // Real-time data subscription
+  useEffect(() => {
+    if (selectedSymbol) {
+      // Subscribe to real-time price updates
+      cryptoAPI.wsManager?.subscribeToPrice(selectedSymbol, (priceData) => {
+        setRealTimeData((prev) => new Map(prev).set(selectedSymbol, priceData));
+      });
+
+      return () => {
+        cryptoAPI.wsManager?.unsubscribeFromPrice(selectedSymbol);
+      };
+    }
+  }, [selectedSymbol]);
 
   // Generate calendar cells
   const calendarDates = generateCalendarData();
@@ -933,6 +996,26 @@ const InteractiveCalendar = ({
           }
           isCollapsed={controlsCollapsed}
           onToggleCollapse={(value) => setControlsCollapsed(value)}
+          patternAnalysis={patternAnalysis}
+          comparisonData={comparisonData}
+          onComparisonRequest={(type) => {
+            console.log("Comparison requested:", type);
+            // Handle different comparison types
+            if (type === "timePeriod") {
+              // Trigger time period comparison
+            } else if (type === "cryptocurrencies") {
+              // Trigger cryptocurrency comparison
+            } else if (type === "patterns") {
+              // Show pattern details
+            }
+          }}
+          alertCount={
+            alertManager.getAlertHistory({ acknowledged: false }).length
+          }
+          onShowAlerts={() => {
+            console.log("Show alerts requested");
+            // Handle showing alerts
+          }}
         />
       )}
 

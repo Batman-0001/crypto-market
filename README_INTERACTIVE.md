@@ -161,7 +161,7 @@ VITE_FALLBACK_API_2=https://api2.binance.com/api/v3
 
 ## 📱 Usage Examples
 
-### Basic Implementation
+### Basic Implementation with New Features
 
 ```jsx
 <InteractiveCalendar
@@ -169,12 +169,17 @@ VITE_FALLBACK_API_2=https://api2.binance.com/api/v3
   showControls={true}
   enableSelection={true}
   enableZoom={true}
+  enablePatternRecognition={true}
+  enableAlerts={true}
+  enableRealTimeData={true}
   onDateSelect={(date, data) => console.log("Selected:", date, data)}
   onDateRangeSelect={(range) => console.log("Range:", range)}
+  onPatternDetected={(patterns) => console.log("Patterns:", patterns)}
+  onAlertTriggered={(alert) => console.log("Alert:", alert)}
 />
 ```
 
-### Advanced Configuration
+### Advanced Configuration with All Features
 
 ```jsx
 <InteractiveCalendar
@@ -184,10 +189,142 @@ VITE_FALLBACK_API_2=https://api2.binance.com/api/v3
   showPerformanceMetrics={true}
   enableKeyboardNav={true}
   showTooltips={true}
+  // New Feature Configurations
+  theme="dark" // or "high-contrast", "colorblind-friendly"
+  enableExport={true}
+  exportFormats={["pdf", "csv", "image"]}
+  alertConfig={{
+    volatilityThreshold: 15,
+    performanceThreshold: 5,
+    volumeThreshold: 2.0,
+    enableBrowserNotifications: true,
+  }}
+  patternAnalysis={{
+    detectTrends: true,
+    detectSupportResistance: true,
+    detectVolatilityClusters: true,
+    detectAnomalies: true,
+    lookbackDays: 30,
+  }}
+  comparisonTools={true}
+  realTimeUpdates={true}
   onDateSelect={handleDateSelection}
   onDateRangeSelect={handleRangeSelection}
   onDataUpdate={handleDataUpdates}
+  onExportComplete={handleExportComplete}
+  onPatternDetected={handlePatternDetection}
+  onComparisonGenerated={handleComparison}
 />
+```
+
+### Theme Configuration
+
+```jsx
+// Apply custom theme
+import { applyTheme, getThemeNames } from "./utils/colorThemes";
+
+// Get available themes
+const themes = getThemeNames();
+console.log(themes); // [{id: 'default', name: 'Default'}, ...]
+
+// Apply theme
+applyTheme("dark"); // or 'high-contrast', 'colorblind-friendly'
+```
+
+### Export Functionality
+
+```jsx
+import { exportToPDF, exportToCSV, exportToImage } from "./utils/exportUtils";
+
+// Export calendar as PDF
+await exportToPDF("calendar-container", {
+  filename: "crypto-analysis.pdf",
+  title: "Cryptocurrency Market Analysis",
+  includeCharts: true,
+});
+
+// Export data as CSV
+await exportToCSV(marketData, {
+  filename: "market-data.csv",
+  includeMetrics: true,
+});
+
+// Export as high-quality image
+await exportToImage("calendar-container", {
+  filename: "calendar-snapshot.png",
+  quality: 1.0,
+  scale: 2,
+});
+```
+
+### Alert System Integration
+
+```jsx
+import { alertManager } from "./utils/alertSystem";
+
+// Subscribe to alerts
+alertManager.subscribe((alert) => {
+  console.log("New alert:", alert);
+  // Handle alert notification
+});
+
+// Configure custom alerts
+alertManager.addCustomAlert({
+  name: "btc-spike",
+  type: "volatility",
+  condition: "greater_than",
+  threshold: 20,
+  severity: "high",
+});
+
+// Get alert statistics
+const stats = alertManager.getAlertStatistics(30); // Last 30 days
+console.log(stats);
+```
+
+### Pattern Recognition Usage
+
+```jsx
+import { analyzePatterns } from "./utils/patternRecognition";
+
+// Analyze market patterns
+const analysis = analyzePatterns(marketData, "BTCUSDT", {
+  detectTrends: true,
+  detectSupportResistance: true,
+  detectVolatilityClusters: true,
+  detectAnomalies: true,
+});
+
+console.log("Detected patterns:", analysis.patterns);
+console.log("Pattern summary:", analysis.summary);
+```
+
+### Comparison Tools
+
+```jsx
+import {
+  compareTimePeriods,
+  compareCryptocurrencies,
+} from "./utils/comparisonUtils";
+
+// Compare different time periods
+const timeComparison = compareTimePeriods(
+  currentPeriodData,
+  previousPeriodData,
+  "BTCUSDT"
+);
+
+// Compare multiple cryptocurrencies
+const cryptoComparison = compareCryptocurrencies(
+  {
+    BTCUSDT: btcData,
+    ETHUSDT: ethData,
+    ADAUSDT: adaData,
+  },
+  "30-day"
+);
+
+console.log("Comparison insights:", timeComparison.insights);
 ```
 
 ### Filter Configuration
@@ -199,10 +336,13 @@ volatilityThreshold={[2, 10]}
 // Volume filtering (20th to 80th percentile)
 volumeThreshold={[20, 80]}
 
-// Feature toggles
+// Feature toggles with new capabilities
 showVolatilityHeatmap={true}
 showLiquidityIndicators={true}
 showPerformanceMetrics={true}
+showPatternOverlays={true}
+showAlertIndicators={true}
+enableDataComparison={true}
 ```
 
 ## 🚀 Getting Started
@@ -242,15 +382,69 @@ npm run preview
 7. **⌨️ Try keyboard shortcuts** → Navigate efficiently
 8. **🎨 Toggle features** → Control heatmaps, indicators, metrics
 
-## 🔮 Future Enhancements
+## 🔮 Future Enhancements ✅ **IMPLEMENTED!**
 
-- **📡 WebSocket Integration**: Real-time streaming data updates
-- **💼 Portfolio Overlay**: Personal portfolio performance tracking
-- **📈 Technical Indicators**: Moving averages, RSI, MACD overlays
-- **📄 Export Features**: PDF/CSV export of selected data and analysis
-- **📱 Mobile App**: React Native version for mobile devices
+- **📡 Real-time Data Integration**: ✅ Multi-source API integration (Binance, CoinGecko, Coinbase) with WebSocket streaming
+- **📄 Advanced Export Features**: ✅ PDF/CSV/Image export with professional formatting and chart integration
+- **🎨 Custom Color Schemes**: ✅ 5 accessible themes including colorblind-friendly and high contrast options
+- **📊 Data Comparison Tools**: ✅ Time period and multi-cryptocurrency comparison with detailed analytics
+- **🚨 Smart Alert System**: ✅ Volatility, performance, and volume alerts with browser notifications
+- **🔍 Pattern Recognition**: ✅ AI-powered trend detection, support/resistance levels, and anomaly identification
+- **✨ Advanced Animations**: ✅ Smooth transitions, data visualization effects, and interactive feedback
 - **🌙 Dark Mode**: Complete dark theme implementation
+- **� Mobile App**: React Native version for mobile devices
 - **🤖 AI Analysis**: Machine learning-powered market predictions
+
+## 🎯 **NEW FEATURES JUST ADDED! 🚀**
+
+### 🎨 **Custom Color Themes**
+
+- **5 Professional Themes**: Default, High Contrast, Colorblind-Friendly, Dark Mode, Monochrome
+- **Accessibility First**: Full support for visual impairments and color vision deficiencies
+- **Dynamic Switching**: Real-time theme changes with localStorage persistence
+- **CSS Custom Properties**: Optimized performance with CSS variables
+
+### 📊 **Advanced Export System**
+
+- **PDF Generation**: Professional reports with embedded charts and comprehensive data tables
+- **CSV Data Export**: Formatted market data with performance metrics and analysis
+- **High-Quality Images**: PNG exports with customizable resolution and branding
+- **Smart Formatting**: Automatic data organization and visual styling
+
+### 📈 **Data Comparison Analytics**
+
+- **Time Period Analysis**: Compare different date ranges with statistical insights
+- **Multi-Crypto Comparison**: Side-by-side performance analysis across cryptocurrencies
+- **Volatility Ratios**: Advanced risk metrics and correlation analysis
+- **Export Integration**: All comparison data exportable in multiple formats
+
+### 🚨 **Intelligent Alert System**
+
+- **Smart Thresholds**: Customizable volatility, performance, and volume alerts
+- **Browser Notifications**: Native desktop alerts with permission management
+- **Alert History**: Comprehensive logging with acknowledgment tracking
+- **Custom Rules**: User-defined alert conditions and severity levels
+
+### 🔍 **Pattern Recognition Engine**
+
+- **Trend Detection**: Automatic identification of bullish/bearish patterns
+- **Support/Resistance**: Dynamic calculation of key price levels
+- **Volatility Clusters**: Detection of high-volatility periods and market stress
+- **Anomaly Detection**: Statistical identification of unusual market behavior
+
+### 📡 **Real-Time Data Integration**
+
+- **Multi-Source APIs**: Binance, CoinGecko, and Coinbase integration with intelligent fallbacks
+- **WebSocket Streaming**: Live price updates with optimized connection management
+- **Rate Limiting**: Intelligent request management to prevent API throttling
+- **Health Monitoring**: Real-time API status tracking and failover systems
+
+### ✨ **Advanced Animation System**
+
+- **15+ Animation Types**: Smooth fades, slides, scales, and custom transitions
+- **Performance Optimized**: Hardware-accelerated animations with intersection observers
+- **Accessibility Compliant**: Respects user motion preferences and provides alternatives
+- **Interactive Feedback**: Enhanced hover states, loading animations, and visual confirmations
 
 ## 🤝 Contributing
 

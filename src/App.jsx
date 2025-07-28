@@ -18,6 +18,10 @@ import {
   Button,
   Chip,
   Grid,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import {
   TrendingUp,
@@ -25,10 +29,31 @@ import {
   Analytics,
   Info,
   Close,
+  Palette,
+  Notifications,
+  GetApp,
+  Compare,
+  Timeline,
 } from "@mui/icons-material";
 import InteractiveCalendar from "./components/InteractiveCalendar";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { DEFAULT_SYMBOL, VIEW_TYPES } from "./constants";
+
+// Import new feature systems
+import {
+  colorThemes,
+  applyTheme,
+  getSavedTheme,
+  getThemeNames,
+} from "./utils/colorThemes";
+import {
+  alertManager,
+  showBrowserNotification,
+  requestNotificationPermission,
+} from "./utils/alertSystem";
+import { exportToPDF, exportToCSV, exportToImage } from "./utils/exportUtils";
+import { initializeAnimations } from "./utils/animations";
+import { cryptoAPI } from "./services/cryptoAPI";
 
 // Create Material-UI theme with responsive design
 const theme = createTheme({
@@ -131,12 +156,21 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
   const [selectedDateRange, setSelectedDateRange] = useState(null);
+  const [calendarData, setCalendarData] = useState([]); // Store calendar data for exports
+  const [currentSymbol, setCurrentSymbol] = useState(DEFAULT_SYMBOL);
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
   const [notification, setNotification] = useState({
     open: false,
     message: "",
     severity: "info",
   });
+
+  // New feature states
+  const [currentTheme, setCurrentTheme] = useState(getSavedTheme());
+  const [alertsEnabled, setAlertsEnabled] = useState(true);
+  const [themeMenuAnchor, setThemeMenuAnchor] = useState(null);
+  const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
+  const [alertHistory, setAlertHistory] = useState([]);
 
   // Responsive breakpoint detection
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -166,6 +200,43 @@ function App() {
     return () =>
       window.removeEventListener("orientationchange", handleOrientationChange);
   }, []);
+
+  // Initialize new feature systems
+  useEffect(() => {
+    // Initialize animations
+    initializeAnimations();
+
+    // Apply saved theme
+    applyTheme(currentTheme);
+
+    // Request notification permission for alerts
+    if (alertsEnabled) {
+      requestNotificationPermission();
+    }
+
+    // Subscribe to alerts
+    const handleAlert = (alert) => {
+      setAlertHistory((prev) => [alert, ...prev.slice(0, 99)]); // Keep last 100 alerts
+
+      // Show browser notification
+      if (alertsEnabled) {
+        showBrowserNotification(alert);
+      }
+
+      // Show in-app notification
+      setNotification({
+        open: true,
+        message: alert.message,
+        severity: alert.severity === "critical" ? "error" : "warning",
+      });
+    };
+
+    alertManager.subscribe(handleAlert);
+
+    return () => {
+      alertManager.unsubscribe(handleAlert);
+    };
+  }, [currentTheme, alertsEnabled]);
 
   // Handle date selection
   const handleDateSelect = (date, data) => {
@@ -201,6 +272,12 @@ function App() {
   // Handle data updates
   const handleDataUpdate = (data, ranges) => {
     console.log("Market data updated:", { dataPoints: data.length, ranges });
+    setCalendarData(data); // Store data for exports
+  };
+
+  // Handle symbol changes
+  const handleSymbolChange = (symbol) => {
+    setCurrentSymbol(symbol);
   };
 
   // Handle notification close
@@ -215,6 +292,89 @@ function App() {
 
   const handleInfoDialogClose = () => {
     setInfoDialogOpen(false);
+  };
+
+  // New feature handlers
+  const handleThemeChange = (themeId) => {
+    const newTheme = applyTheme(themeId);
+    setCurrentTheme(themeId);
+    setThemeMenuAnchor(null);
+
+    setNotification({
+      open: true,
+      message: `Theme changed to ${newTheme.name}`,
+      severity: "success",
+    });
+  };
+
+  const handleExport = async (format, element) => {
+    try {
+      setNotification({
+        open: true,
+        message: `Exporting as ${format.toUpperCase()}...`,
+        severity: "info",
+      });
+
+      let result;
+      switch (format) {
+        case "pdf":
+          result = await exportToPDF(calendarData, {
+            filename: `crypto-calendar-${currentSymbol}-${
+              new Date().toISOString().split("T")[0]
+            }.pdf`,
+            symbol: currentSymbol,
+            title: `${currentSymbol} Market Analysis`,
+            dateRange: selectedDateRange,
+          });
+          break;
+        case "csv":
+          result = await exportToCSV(calendarData, {
+            filename: `crypto-calendar-${currentSymbol}-${
+              new Date().toISOString().split("T")[0]
+            }.csv`,
+            symbol: currentSymbol,
+          });
+          break;
+        case "image":
+          result = await exportToImage(element || "calendar-container", {
+            filename: `crypto-calendar-${currentSymbol}-${
+              new Date().toISOString().split("T")[0]
+            }.png`,
+          });
+          break;
+        default:
+          throw new Error("Unsupported export format");
+      }
+
+      setNotification({
+        open: true,
+        message: `Successfully exported as ${format.toUpperCase()}!`,
+        severity: "success",
+      });
+    } catch (error) {
+      console.error("Export failed:", error);
+      setNotification({
+        open: true,
+        message: `Export failed: ${error.message}`,
+        severity: "error",
+      });
+    }
+    setExportMenuAnchor(null);
+  };
+
+  const toggleAlerts = () => {
+    if (alertsEnabled) {
+      alertManager.disableAlerts();
+    } else {
+      alertManager.enableAlerts();
+    }
+    setAlertsEnabled(!alertsEnabled);
+
+    setNotification({
+      open: true,
+      message: `Alerts ${!alertsEnabled ? "enabled" : "disabled"}`,
+      severity: "info",
+    });
   };
 
   return (
@@ -407,6 +567,7 @@ function App() {
 
           {/* Main Content */}
           <Container
+            id="calendar-container"
             maxWidth="xl"
             sx={{
               py: { xs: 2, sm: 3, md: 4 }, // Responsive padding
@@ -438,6 +599,7 @@ function App() {
               onDateSelect={handleDateSelect}
               onDateRangeSelect={handleDateRangeSelect}
               onDataUpdate={handleDataUpdate}
+              onSymbolChange={handleSymbolChange}
               showLegend={true} // Show legend on all screen sizes with responsive design
               showTooltips={true}
               showControls={true}
@@ -1109,72 +1271,197 @@ function App() {
             </Typography>
           </Box>
 
-          {/* Floating Info Button - FAB Style */}
-          <IconButton
-            onClick={handleInfoDialogOpen}
+          {/* Floating Action Buttons - FAB Style */}
+          <Box
             sx={{
               position: "fixed",
               bottom: { xs: 24, md: 32 },
               right: { xs: 24, md: 32 },
               zIndex: 1000,
-              width: { xs: 56, md: 64 },
-              height: { xs: 56, md: 64 },
-              backgroundColor: "primary.main",
-              color: "white",
-              boxShadow: "0 8px 24px rgba(25, 118, 210, 0.4)",
-              "&:hover": {
-                backgroundColor: "primary.dark",
-                transform: "translateY(-4px) scale(1.05)",
-                boxShadow: "0 12px 32px rgba(25, 118, 210, 0.6)",
-              },
-              "&:active": {
-                transform: "translateY(-2px) scale(1.02)",
-              },
-              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-              // Subtle bounce animation
-              animation: "fabFloat 4s ease-in-out infinite",
-              "@keyframes fabFloat": {
-                "0%, 100%": { transform: "translateY(0px)" },
-                "50%": { transform: "translateY(-4px)" },
-              },
-              // Pulse effect on hover
-              "&::before": {
-                content: '""',
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                borderRadius: "50%",
-                background: "rgba(255, 255, 255, 0.2)",
-                transform: "scale(0)",
-                transition: "transform 0.3s ease",
-              },
-              "&:hover::before": {
-                transform: "scale(1)",
-              },
-              // Add a subtle glow
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                top: -4,
-                left: -4,
-                right: -4,
-                bottom: -4,
-                borderRadius: "50%",
-                background:
-                  "linear-gradient(45deg, rgba(25, 118, 210, 0.2), rgba(66, 165, 245, 0.2))",
-                opacity: 0,
-                zIndex: -1,
-                transition: "opacity 0.3s ease",
-              },
-              "&:hover::after": {
-                opacity: 1,
-              },
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
             }}
           >
-            <Info sx={{ fontSize: { xs: 28, md: 32 } }} />
-          </IconButton>
+            {/* Theme Selection Button */}
+            <IconButton
+              onClick={(event) => setThemeMenuAnchor(event.currentTarget)}
+              sx={{
+                width: { xs: 48, md: 56 },
+                height: { xs: 48, md: 56 },
+                backgroundColor: "secondary.main",
+                color: "white",
+                boxShadow: "0 6px 20px rgba(220, 0, 78, 0.4)",
+                "&:hover": {
+                  backgroundColor: "secondary.dark",
+                  transform: "translateY(-2px) scale(1.05)",
+                  boxShadow: "0 8px 24px rgba(220, 0, 78, 0.6)",
+                },
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
+              <Palette />
+            </IconButton>
+
+            {/* Export Menu Button */}
+            <IconButton
+              onClick={(event) => setExportMenuAnchor(event.currentTarget)}
+              sx={{
+                width: { xs: 48, md: 56 },
+                height: { xs: 48, md: 56 },
+                backgroundColor: "success.main",
+                color: "white",
+                boxShadow: "0 6px 20px rgba(76, 175, 80, 0.4)",
+                "&:hover": {
+                  backgroundColor: "success.dark",
+                  transform: "translateY(-2px) scale(1.05)",
+                  boxShadow: "0 8px 24px rgba(76, 175, 80, 0.6)",
+                },
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
+              <GetApp />
+            </IconButton>
+
+            {/* Alerts Toggle Button */}
+            <IconButton
+              onClick={toggleAlerts}
+              sx={{
+                width: { xs: 48, md: 56 },
+                height: { xs: 48, md: 56 },
+                backgroundColor: alertsEnabled ? "warning.main" : "grey.500",
+                color: "white",
+                boxShadow: `0 6px 20px rgba(${
+                  alertsEnabled ? "255, 152, 0" : "158, 158, 158"
+                }, 0.4)`,
+                "&:hover": {
+                  backgroundColor: alertsEnabled ? "warning.dark" : "grey.600",
+                  transform: "translateY(-2px) scale(1.05)",
+                  boxShadow: `0 8px 24px rgba(${
+                    alertsEnabled ? "255, 152, 0" : "158, 158, 158"
+                  }, 0.6)`,
+                },
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
+              <Notifications />
+            </IconButton>
+
+            {/* Info Button */}
+            <IconButton
+              onClick={handleInfoDialogOpen}
+              sx={{
+                width: { xs: 56, md: 64 },
+                height: { xs: 56, md: 64 },
+                backgroundColor: "primary.main",
+                color: "white",
+                boxShadow: "0 8px 24px rgba(25, 118, 210, 0.4)",
+                "&:hover": {
+                  backgroundColor: "primary.dark",
+                  transform: "translateY(-4px) scale(1.05)",
+                  boxShadow: "0 12px 32px rgba(25, 118, 210, 0.6)",
+                },
+                "&:active": {
+                  transform: "translateY(-2px) scale(1.02)",
+                },
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                // Subtle bounce animation
+                animation: "fabFloat 4s ease-in-out infinite",
+                "@keyframes fabFloat": {
+                  "0%, 100%": { transform: "translateY(0px)" },
+                  "50%": { transform: "translateY(-4px)" },
+                },
+                // Pulse effect on hover
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  borderRadius: "50%",
+                  background: "rgba(255, 255, 255, 0.2)",
+                  transform: "scale(0)",
+                  transition: "transform 0.3s ease",
+                },
+                "&:hover::before": {
+                  transform: "scale(1)",
+                },
+                // Add a subtle glow
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  top: -4,
+                  left: -4,
+                  right: -4,
+                  bottom: -4,
+                  borderRadius: "50%",
+                  background:
+                    "linear-gradient(45deg, rgba(25, 118, 210, 0.2), rgba(66, 165, 245, 0.2))",
+                  opacity: 0,
+                  zIndex: -1,
+                  transition: "opacity 0.3s ease",
+                },
+                "&:hover::after": {
+                  opacity: 1,
+                },
+              }}
+            >
+              <Info sx={{ fontSize: { xs: 28, md: 32 } }} />
+            </IconButton>
+          </Box>
+
+          {/* Theme Selection Menu */}
+          <Menu
+            anchorEl={themeMenuAnchor}
+            open={Boolean(themeMenuAnchor)}
+            onClose={() => setThemeMenuAnchor(null)}
+            transformOrigin={{ horizontal: "right", vertical: "bottom" }}
+            anchorOrigin={{ horizontal: "right", vertical: "top" }}
+          >
+            {getThemeNames().map((theme) => (
+              <MenuItem
+                key={theme.id}
+                onClick={() => handleThemeChange(theme.id)}
+                selected={currentTheme === theme.id}
+              >
+                <ListItemIcon>
+                  <Palette
+                    color={currentTheme === theme.id ? "primary" : "inherit"}
+                  />
+                </ListItemIcon>
+                <ListItemText primary={theme.name} />
+              </MenuItem>
+            ))}
+          </Menu>
+
+          {/* Export Menu */}
+          <Menu
+            anchorEl={exportMenuAnchor}
+            open={Boolean(exportMenuAnchor)}
+            onClose={() => setExportMenuAnchor(null)}
+            transformOrigin={{ horizontal: "right", vertical: "bottom" }}
+            anchorOrigin={{ horizontal: "right", vertical: "top" }}
+          >
+            <MenuItem onClick={() => handleExport("pdf")}>
+              <ListItemIcon>
+                <GetApp />
+              </ListItemIcon>
+              <ListItemText primary="Export as PDF" />
+            </MenuItem>
+            <MenuItem onClick={() => handleExport("csv")}>
+              <ListItemIcon>
+                <GetApp />
+              </ListItemIcon>
+              <ListItemText primary="Export as CSV" />
+            </MenuItem>
+            <MenuItem onClick={() => handleExport("image")}>
+              <ListItemIcon>
+                <GetApp />
+              </ListItemIcon>
+              <ListItemText primary="Export as Image" />
+            </MenuItem>
+          </Menu>
         </Box>
       </ThemeProvider>
     </ErrorBoundary>
