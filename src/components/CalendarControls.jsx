@@ -34,8 +34,6 @@ import {
   TrendingUp,
   Visibility,
   Whatshot,
-  Speed,
-  BarChart as BarChartIcon,
   Compare,
   Timeline,
   Pattern,
