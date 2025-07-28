@@ -53,6 +53,10 @@ import {
 import { getPatternIcon, getPatternColor } from "../utils/patternRecognition";
 import { formatComparisonValue } from "../utils/comparisonUtils";
 
+// Import visualization dialogs
+import PatternAnalysisDialog from "./PatternAnalysisDialog";
+import ComparisonAnalysisDialog from "./ComparisonAnalysisDialog";
+
 /**
  * Simple Calendar Controls without GSAP animations
  * Clean, functional design that always renders properly
@@ -82,6 +86,7 @@ const CalendarControls = ({
   // Data props
   onRefreshData = () => {},
   isLoading = false,
+  data = [], // Add data prop for analysis
 
   // Metric filter props
   volatilityThreshold = [0, 10],
@@ -102,6 +107,11 @@ const CalendarControls = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Dialog states
+  const [patternDialogOpen, setPatternDialogOpen] = useState(false);
+  const [comparisonDialogOpen, setComparisonDialogOpen] = useState(false);
+  const [comparisonType, setComparisonType] = useState("timePeriod");
 
   // Modern color palette
   const colors = {
@@ -1076,7 +1086,7 @@ const CalendarControls = ({
               >
                 <Timeline sx={{ color: colors.accent.main }} />
                 Pattern Analysis
-                {patternAnalysis && (
+                {patternAnalysis && patternAnalysis.totalPatterns > 0 && (
                   <Chip
                     label={patternAnalysis.totalPatterns}
                     size="small"
@@ -1103,22 +1113,28 @@ const CalendarControls = ({
                         // Safety check for pattern object
                         if (!pattern || !pattern.type) return null;
 
+                        const patternIcon = getPatternIcon(pattern);
+                        const patternColor = getPatternColor(pattern);
+
                         return (
                           <Chip
                             key={index}
-                            label={`${getPatternIcon(pattern)} ${pattern.type}`}
+                            label={`${patternIcon} ${pattern.type
+                              .replace("_", " ")
+                              .toUpperCase()}`}
                             size="small"
                             sx={{
-                              backgroundColor: alpha(
-                                getPatternColor(pattern),
-                                0.1
-                              ),
-                              color: getPatternColor(pattern),
-                              border: `1px solid ${alpha(
-                                getPatternColor(pattern),
-                                0.3
-                              )}`,
+                              backgroundColor: alpha(patternColor, 0.1),
+                              color: patternColor,
+                              border: `1px solid ${alpha(patternColor, 0.3)}`,
+                              fontWeight: 500,
+                              cursor: "pointer",
+                              "&:hover": {
+                                backgroundColor: alpha(patternColor, 0.2),
+                                transform: "translateY(-1px)",
+                              },
                             }}
+                            onClick={() => setPatternDialogOpen(true)}
                           />
                         );
                       })}
@@ -1134,22 +1150,27 @@ const CalendarControls = ({
                     )}
                   </Box>
 
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 2 }}
-                  >
-                    {Object.entries(patternAnalysis.summary)
-                      .filter(([_, count]) => count > 0)
-                      .map(([type, count]) => `${count} ${type}`)
-                      .join(", ")}
-                  </Typography>
+                  {patternAnalysis.summary && (
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mb: 2 }}
+                    >
+                      {Object.entries(patternAnalysis.summary)
+                        .filter(([_, count]) => count > 0)
+                        .map(
+                          ([type, count]) =>
+                            `${count} ${type.replace("_", " ")}`
+                        )
+                        .join(", ")}
+                    </Typography>
+                  )}
 
                   <Button
                     variant="outlined"
                     size="small"
                     startIcon={<Analytics />}
-                    onClick={() => onComparisonRequest("patterns")}
+                    onClick={() => setPatternDialogOpen(true)}
                     sx={{
                       borderColor: colors.accent.main,
                       color: colors.accent.main,
@@ -1163,9 +1184,39 @@ const CalendarControls = ({
                   </Button>
                 </Box>
               ) : (
-                <Typography variant="body2" color="text.secondary">
-                  Analyzing patterns... Please wait for data to load.
-                </Typography>
+                <Box>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 2 }}
+                  >
+                    {patternAnalysis === null
+                      ? "Loading pattern analysis..."
+                      : "No patterns detected in current dataset. Patterns will appear as market data loads."}
+                  </Typography>
+
+                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                    {/* Show sample pattern types */}
+                    <Chip
+                      label="📈 Trends"
+                      size="small"
+                      variant="outlined"
+                      sx={{ opacity: 0.5 }}
+                    />
+                    <Chip
+                      label="⚡ Volatility"
+                      size="small"
+                      variant="outlined"
+                      sx={{ opacity: 0.5 }}
+                    />
+                    <Chip
+                      label="📊 Volume"
+                      size="small"
+                      variant="outlined"
+                      sx={{ opacity: 0.5 }}
+                    />
+                  </Box>
+                </Box>
               )}
             </CardContent>
           </Card>
@@ -1200,10 +1251,10 @@ const CalendarControls = ({
                       size="small"
                       onClick={onShowAlerts}
                       sx={{
-                        backgroundColor: alpha(colors.error.main, 0.1),
-                        color: colors.error.main,
+                        backgroundColor: alpha("#f44336", 0.1),
+                        color: "#f44336",
                         "&:hover": {
-                          backgroundColor: alpha(colors.error.main, 0.2),
+                          backgroundColor: alpha("#f44336", 0.2),
                         },
                       }}
                     >
@@ -1218,7 +1269,10 @@ const CalendarControls = ({
                   variant="outlined"
                   size="small"
                   startIcon={<DateRange />}
-                  onClick={() => onComparisonRequest("timePeriod")}
+                  onClick={() => {
+                    setComparisonType("timePeriod");
+                    setComparisonDialogOpen(true);
+                  }}
                   sx={{
                     borderColor: colors.primary.main,
                     color: colors.primary.main,
@@ -1236,7 +1290,10 @@ const CalendarControls = ({
                   variant="outlined"
                   size="small"
                   startIcon={<ShowChart />}
-                  onClick={() => onComparisonRequest("cryptocurrencies")}
+                  onClick={() => {
+                    setComparisonType("cryptocurrencies");
+                    setComparisonDialogOpen(true);
+                  }}
                   sx={{
                     borderColor: colors.secondary.main,
                     color: colors.secondary.main,
@@ -1269,15 +1326,16 @@ const CalendarControls = ({
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {comparisonData.symbol || "Multiple Assets"}
                     </Typography>
-                    {comparisonData.differences && (
-                      <Typography variant="caption" color="text.secondary">
-                        Return Diff:{" "}
-                        {formatComparisonValue(
-                          comparisonData.differences.returnDifference,
-                          "percent"
-                        )}
-                      </Typography>
-                    )}
+                    {comparisonData.differences &&
+                      comparisonData.differences.returnDifference && (
+                        <Typography variant="caption" color="text.secondary">
+                          Return Diff:{" "}
+                          {formatComparisonValue(
+                            comparisonData.differences.returnDifference,
+                            "percent"
+                          )}
+                        </Typography>
+                      )}
                   </Box>
                 )}
               </Box>
@@ -1285,6 +1343,23 @@ const CalendarControls = ({
           </Card>
         </Box>
       )}
+
+      {/* Analysis Dialogs */}
+      <PatternAnalysisDialog
+        open={patternDialogOpen}
+        onClose={() => setPatternDialogOpen(false)}
+        patternAnalysis={patternAnalysis}
+        symbol={selectedSymbol}
+      />
+
+      <ComparisonAnalysisDialog
+        open={comparisonDialogOpen}
+        onClose={() => setComparisonDialogOpen(false)}
+        data={data}
+        availableSymbols={availableSymbols}
+        currentSymbol={selectedSymbol}
+        type={comparisonType}
+      />
     </Paper>
   );
 };
